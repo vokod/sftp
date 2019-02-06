@@ -11,6 +11,7 @@ import com.awolity.sftpteszt.ssh.SshTest
 import kotlinx.android.synthetic.main.activity_main.*
 import net.schmizz.sshj.SSHClient
 import net.schmizz.sshj.sftp.RemoteResourceInfo
+import java.io.File
 import java.io.IOException
 import java.lang.Exception
 import java.security.Security
@@ -92,11 +93,28 @@ class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
     }
 
     override fun onDeleteClicked(item: RemoteResourceInfo) {
+        sshTest.deleteFile(client, item, object : SshTest.DeleteListener {
+            override fun onFileDeleted(name: String?) {
+                Log.d(TAG, "onFileDeleted - $name")
+                listDirectory(dirs.peek())
+            }
 
+            override fun onError(e: Exception) {
+                Log.d(TAG, "onFileDeleted - ${e.localizedMessage}")
+            }
+        })
     }
 
     override fun onLongClicked(item: RemoteResourceInfo) {
+        sshTest.downloadFile(client, item, applicationContext.filesDir, object : SshTest.DownloadListener {
+            override fun onFileDownloaded(file: File) {
+                Log.d(TAG, "onFileDownloaded - " + file.name)
+            }
 
+            override fun onError(e: Exception) {
+                Log.d(TAG, "onError - " + e.localizedMessage)
+            }
+        })
     }
 
     override fun onBackPressed() {

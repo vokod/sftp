@@ -81,7 +81,7 @@ public class SshTest {
                         List<RemoteResourceInfo> remoteFiles = sftp.ls(path);
                         listener.onDirectoryListed(remoteFiles);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        listener.onError(new SshException("IO exception error", e));
                     }
                 }
             }
@@ -94,7 +94,7 @@ public class SshTest {
             @Override
             public void run() {
                 File inFile = new File(inputDir, remoteFile.getName());
-                if (remoteFile.isDirectory()|| !remoteFile.isRegularFile()) {
+                if (remoteFile.isDirectory() || !remoteFile.isRegularFile()) {
                     listener.onError(new SshException("Remote file is a directory!", null));
                     return;
                 }
@@ -108,13 +108,51 @@ public class SshTest {
                     try (SFTPClient sftp = sshClient.newSFTPClient()) {
                         sftp.get(remoteFile.getName(), new FileSystemFile(inFile));
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        listener.onError(new SshException("IO exception error", e));
                     }
                 }
                 listener.onFileDownloaded(inFile);
             }
         });
     }
+
+    public void deleteFile(final SSHClient sshClient, final RemoteResourceInfo remoteFile,
+                           final DeleteListener listener) {
+        AppExecutors.getInstance().network().execute(new Runnable() {
+            @Override
+            public void run() {
+
+                if (sshClient == null) {
+                    listener.onError(new SshException("Client not initialised", null));
+                    return;
+                } else if (!sshClient.isConnected()) {
+                    listener.onError(new SshException("Client not connected", null));
+                    return;
+                } else if (!sshClient.isAuthenticated()) {
+                    listener.onError(new SshException("Client not authenticated", null));
+                    return;
+                }
+                if (remoteFile.isDirectory()) {
+                    try (SFTPClient sftp = sshClient.newSFTPClient()) {
+                        sftp.rmdir(remoteFile.getName());
+                        listener.onFileDeleted(remoteFile.getName());
+                    } catch (IOException e) {
+                        listener.onError(new SshException("IO exception error", e));
+                    }
+                } else {
+                    try (SFTPClient sftp = sshClient.newSFTPClient()) {
+                        sftp.rm(remoteFile.getPath());
+                        listener.onFileDeleted(remoteFile.getName());
+                    } catch (IOException e) {
+                        listener.onError(new SshException("IO exception error", e));
+                    }
+                }
+
+            }
+        });
+    }
+
+
 
   /*  public void upload(final File file, final UploadListener listener) {
         AppExecutors.getInstance().network().execute(new Runnable() {
@@ -173,15 +211,21 @@ public class SshTest {
     }
 
     public interface ListDirectoryListener {
-        void onDirectoryListed(@NonNull  List<RemoteResourceInfo> remoteFiles);
+        void onDirectoryListed(@NonNull List<RemoteResourceInfo> remoteFiles);
 
         void onError(Exception e);
     }
 
     public interface DownloadListener {
-        void onFileDownloaded(File file);
+        void onFileDownloaded(@NonNull File file);
 
-        void onError(Exception e);
+        void onError(@NonNull Exception e);
+    }
+
+    public interface DeleteListener {
+        void onFileDeleted(String name);
+
+        void onError(@NonNull Exception e);
     }
 
     public interface UploadListener {

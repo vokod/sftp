@@ -126,6 +126,14 @@ public class RemoteFileAdapter extends RecyclerView.Adapter<RemoteFileAdapter.Re
                 }
             });
 
+            itemLinearLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    listener.onDeleteClicked(item);
+                    return true;
+                }
+            });
+
             deleteImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
