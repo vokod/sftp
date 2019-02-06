@@ -8,6 +8,7 @@ import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
+import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
@@ -23,6 +24,7 @@ public class SshTest {
 
     public void connect(final Context context, final ConnectionData data,
                         final ConnectListener listener) {
+        Log.d(TAG, "connect() called with: context = [" + context + "], data = [" + data + "], listener = [" + listener + "]");
         AppExecutors.getInstance().network().execute(new Runnable() {
             @Override
             public void run() {
@@ -63,7 +65,8 @@ public class SshTest {
         });
     }
 
-    public void listDirectory(final SSHClient sshClient, final ListDirectoryListener listener) {
+    public void listDirectory(final SSHClient sshClient, final String path, final ListDirectoryListener listener) {
+        Log.d(TAG, "listDirectory() called with: sshClient = [" + sshClient + "], listener = [" + listener + "]");
         AppExecutors.getInstance().network().execute(new Runnable() {
             @Override
             public void run() {
@@ -74,78 +77,44 @@ public class SshTest {
                 } else if (!sshClient.isAuthenticated()) {
                     listener.onError(new SshException("Client not authenticated", null));
                 } else {
-                    try {
-                        final Session session = sshClient.startSession();
-                        Session.Command cmd = session.exec("ls");
-                        String result = IOUtils.readFully(cmd.getInputStream()).toString();
-                        RemoteFile[] files = getFileList(sshClient, result);
-                        listener.onDirectoryListed(files);
-                    } catch (UserAuthException e) {
-                        listener.onError(new SshException("User authentication error", e));
-                    } catch (TransportException e) {
-                        listener.onError(new SshException("Transport exception error", e));
+                    try (SFTPClient sftp = sshClient.newSFTPClient()) {
+                        List<RemoteResourceInfo> remoteFiles = sftp.ls(path);
+                        listener.onDirectoryListed(remoteFiles);
                     } catch (IOException e) {
-                        listener.onError(new SshException("IO exception error", e));
+                        e.printStackTrace();
                     }
                 }
             }
         });
     }
 
-    private RemoteFile[] getFileList(final SSHClient sshClient, String resultString) throws IOException {
-        String lines[] = resultString.split("\\r?\\n");
-        RemoteFile[] files = new RemoteFile[lines.length];
-       for (int i = 0; i < files.length; i++) {
-            files[i] = new RemoteFile(lines[i], isDirectory(sshClient, lines[i]));
-        }
-        return files;
-    }
-
-    private boolean isDirectory(final SSHClient sshClient, String filename) throws IOException {
-        Log.d(TAG, "isDirectory() called with: sshClient = [" + sshClient + "], filename = [" + filename + "]");
-        Session session = sshClient.startSession();
-        Session.Command cmd = session.exec("cd " + filename);
-        String result = IOUtils.readFully(cmd.getInputStream()).toString();
-        Log.d(TAG, "result: " + result);
-        if (result.equals("cd: No such directory.\n")) {
-            return false;
-        } else {
-            session = sshClient.startSession();
-            session.exec("cd ..");
-            return true;
-        }
-    }
-
-/*    public void download(final Context context, final SSHClient sshClient, final DownloadListener listener) {
+    public void downloadFile(final SSHClient sshClient, final RemoteResourceInfo remoteFile,
+                             final File inputDir, final DownloadListener listener) {
         AppExecutors.getInstance().network().execute(new Runnable() {
             @Override
             public void run() {
-                File inFile = null;
-                String result = "\nDownloading file \"1.txt\"...";
+                File inFile = new File(inputDir, remoteFile.getName());
+                if (remoteFile.isDirectory()|| !remoteFile.isRegularFile()) {
+                    listener.onError(new SshException("Remote file is a directory!", null));
+                    return;
+                }
                 if (sshClient == null) {
-                    result += "\nNot yet connected!";
+                    listener.onError(new SshException("Client not initialised", null));
+                } else if (!sshClient.isConnected()) {
+                    listener.onError(new SshException("Client not connected", null));
+                } else if (!sshClient.isAuthenticated()) {
+                    listener.onError(new SshException("Client not authenticated", null));
                 } else {
                     try (SFTPClient sftp = sshClient.newSFTPClient()) {
-                        inFile = new File(context.getFilesDir(), "1.txt");
-                        sftp.get("1.txt", new FileSystemFile(inFile));
-                        result += "\nsuccess";
+                        sftp.get(remoteFile.getName(), new FileSystemFile(inFile));
                     } catch (IOException e) {
                         e.printStackTrace();
-                        result += "\n" + e.getLocalizedMessage();
                     }
                 }
-                final File finalInFile = inFile;
-                final String finalResult = result;
-                AppExecutors.getInstance().mainThread().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        listener.onFileDownloaded(finalInFile, finalResult);
-                    }
-                });
+                listener.onFileDownloaded(inFile);
             }
-
         });
-    }*/
+    }
 
   /*  public void upload(final File file, final UploadListener listener) {
         AppExecutors.getInstance().network().execute(new Runnable() {
@@ -204,13 +173,15 @@ public class SshTest {
     }
 
     public interface ListDirectoryListener {
-        void onDirectoryListed(@NonNull RemoteFile[] files);
+        void onDirectoryListed(@NonNull  List<RemoteResourceInfo> remoteFiles);
 
         void onError(Exception e);
     }
 
     public interface DownloadListener {
-        void onFileDownloaded(File file, String result);
+        void onFileDownloaded(File file);
+
+        void onError(Exception e);
     }
 
     public interface UploadListener {

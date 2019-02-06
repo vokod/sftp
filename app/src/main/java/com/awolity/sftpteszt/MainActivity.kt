@@ -3,18 +3,25 @@ package com.awolity.sftpteszt
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.awolity.sftpteszt.ssh.ConnectionData
-import com.awolity.sftpteszt.ssh.RemoteFile
 import com.awolity.sftpteszt.ssh.SshTest
 import kotlinx.android.synthetic.main.activity_main.*
 import net.schmizz.sshj.SSHClient
+import net.schmizz.sshj.sftp.RemoteResourceInfo
+import java.io.IOException
 import java.lang.Exception
 import java.security.Security
+import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
 
     private val sshTest = SshTest()
     private var client: SSHClient? = null
+    private lateinit var adapter: RemoteFileAdapter
+    private val dirs = ArrayDeque<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +36,8 @@ class MainActivity : AppCompatActivity() {
                 override fun onConnected(client: SSHClient) {
                     this@MainActivity.client = client
                     Log.d(TAG, "...onConnected")
+                    dirs.push("/")
+                    listDirectory("/")
                 }
 
                 override fun onVerifyError(e: Exception) {
@@ -42,31 +51,65 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
-        btn_list.setOnClickListener {
-            Log.d(TAG, "Listing...")
-            client.let {
-                sshTest.listDirectory(client, object : SshTest.ListDirectoryListener {
-                    override fun onDirectoryListed(files: Array<out RemoteFile>) {
-                        Log.d(TAG, "...onDirectoryListed: \n")
-                        for (remoteFile in files) {
-                            Log.d(
-                                TAG, remoteFile.name + if (remoteFile.isDirectory) {
-                                    " directory"
-                                } else {
-                                    " file"
-                                }
-                            )
-                        }
-                    }
 
-                    override fun onError(e: Exception?) {
-                        Log.d(TAG, "...onError: " + e?.localizedMessage)
-                        Log.d(TAG, "...cause: " + e?.cause)
+        setupRv()
+    }
+
+    private fun listDirectory(path: String) {
+        client.let {
+            sshTest.listDirectory(client, path, object : SshTest.ListDirectoryListener {
+                override fun onDirectoryListed(remoteFiles: MutableList<RemoteResourceInfo>) {
+                    Log.d(TAG, "...onDirectoryListed: \n")
+                    AppExecutors.getInstance().mainThread().execute {
+                        adapter.updateItems(remoteFiles)
                     }
-                })
-            }
+                }
+
+                override fun onError(e: Exception?) {
+                    Log.d(TAG, "...onError: " + e?.localizedMessage)
+                    Log.d(TAG, "...cause: " + e?.cause)
+                }
+            })
         }
+    }
 
+    private fun setupRv() {
+        adapter = RemoteFileAdapter(
+            layoutInflater,
+            this as RemoteFileAdapter.RemoteFileListener, true
+        )
+        val linearLayoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+        val dividerItemDecoration = DividerItemDecoration(rv_remote.context, linearLayoutManager.orientation)
+        rv_remote.addItemDecoration(dividerItemDecoration)
+        rv_remote.layoutManager = linearLayoutManager
+        rv_remote.adapter = adapter
+    }
+
+    override fun onItemClicked(item: RemoteResourceInfo) {
+        Log.d(TAG, "onItemClicked - name:" + item.name + " path: " + item.path + " parent: " + item.parent)
+        dirs.push(item.path)
+        listDirectory(item.path)
+    }
+
+    override fun onDeleteClicked(item: RemoteResourceInfo) {
+
+    }
+
+    override fun onLongClicked(item: RemoteResourceInfo) {
+
+    }
+
+    override fun onBackPressed() {
+        try {
+            val dir = dirs.pop()
+            Log.d(TAG, dir)
+            listDirectory(dirs.peek())
+
+        } catch (e: NoSuchElementException) {
+            super.onBackPressed()
+        } catch (e: IOException) {
+            Log.e(TAG, "error initializing adapter!", e)
+        }
 
     }
 

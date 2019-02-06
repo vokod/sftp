@@ -40,4 +40,15 @@ dependencies {
     implementation 'com.madgag.spongycastle:prov:1.58.0.0'
     implementation 'com.madgag.spongycastle:pkix:1.54.0.0'
     implementation 'com.madgag.spongycastle:pg:1.54.0.0'
+
+    // textdrawable
+    implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+
+    // 4dp line alignment
+    implementation 'com.actinarium.aligned:aligned:0.1'
+
 }
+
+
