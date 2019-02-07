@@ -3,9 +3,11 @@ package com.awolity.sftpteszt
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.afollestad.materialdialogs.folderselector.FileChooserDialog
 import com.awolity.sftpteszt.ssh.ConnectionData
 import com.awolity.sftpteszt.ssh.SshTest
 import kotlinx.android.synthetic.main.activity_main.*
@@ -17,12 +19,14 @@ import java.lang.Exception
 import java.security.Security
 import java.util.*
 
-class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
+class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
+    FileChooserDialog.FileCallback {
 
     private val sshTest = SshTest()
     private var client: SSHClient? = null
     private lateinit var adapter: RemoteFileAdapter
     private val dirs = ArrayDeque<String>()
+    private var actualDir: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +56,52 @@ class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
             })
         }
 
+        fab_upload.setOnClickListener {
+            if (client == null) {
+                Toast.makeText(this, "Not connected", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            FileChooserDialog.Builder(this@MainActivity)
+                .extensionsFilter(
+                    "a",
+                    "b",
+                    "c",
+                    "d",
+                    "e",
+                    "f",
+                    "g",
+                    "h",
+                    "i",
+                    "j",
+                    "k",
+                    "l",
+                    "m",
+                    "n",
+                    "o",
+                    "p",
+                    "q",
+                    "r",
+                    "s",
+                    "t",
+                    "u",
+                    "v",
+                    "w",
+                    "x",
+                    "y",
+                    "z",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "8",
+                    "9",
+                    "0"
+                )
+                .show()
+        }
 
         setupRv()
     }
@@ -63,6 +113,7 @@ class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
                     Log.d(TAG, "...onDirectoryListed: \n")
                     AppExecutors.getInstance().mainThread().execute {
                         adapter.updateItems(remoteFiles)
+                        actualDir = path
                     }
                 }
 
@@ -84,6 +135,20 @@ class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
         rv_remote.addItemDecoration(dividerItemDecoration)
         rv_remote.layoutManager = linearLayoutManager
         rv_remote.adapter = adapter
+    }
+
+    override fun onFileSelection(dialog: FileChooserDialog, file: File) {
+        Log.d(TAG, "...onFileSelection")
+        sshTest.uploadFile(client, file, actualDir, object : SshTest.UploadListener {
+            override fun onFileUploaded(result: String) {
+                Log.d(TAG, "...onFileUploaded: $result")
+                listDirectory(actualDir!!)
+            }
+
+            override fun onError(e: Exception) {
+                Log.d(TAG, "...onError: ${e.localizedMessage}")
+            }
+        })
     }
 
     override fun onItemClicked(item: RemoteResourceInfo) {

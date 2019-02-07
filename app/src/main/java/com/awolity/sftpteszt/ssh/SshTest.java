@@ -147,8 +147,33 @@ public class SshTest {
                         listener.onError(new SshException("IO exception error", e));
                     }
                 }
-
             }
+        });
+    }
+
+    public void uploadFile(final SSHClient sshClient, final File localFile, final String remotePath,
+                           final UploadListener listener) {
+        AppExecutors.getInstance().network().execute(new Runnable() {
+            @Override
+            public void run() {
+                if (sshClient == null) {
+                    listener.onError(new SshException("Client not initialised", null));
+                    return;
+                } else if (!sshClient.isConnected()) {
+                    listener.onError(new SshException("Client not connected", null));
+                    return;
+                } else if (!sshClient.isAuthenticated()) {
+                    listener.onError(new SshException("Client not authenticated", null));
+                    return;
+                }
+                try (SFTPClient sftp = sshClient.newSFTPClient()) {
+                    sftp.put(new FileSystemFile(localFile.getAbsolutePath()), remotePath + localFile.getName());
+                    listener.onFileUploaded(localFile.getName());
+                } catch (IOException e) {
+                    listener.onError(new SshException("IO exception error", e));
+                }
+            }
+
         });
     }
 
@@ -229,6 +254,8 @@ public class SshTest {
     }
 
     public interface UploadListener {
-        void onFileUploaded(String result);
+        void onFileUploaded(@NonNull String result);
+
+        void onError(@NonNull Exception e);
     }
 }

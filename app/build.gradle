@@ -28,9 +28,13 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.0.1'
     implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
     implementation "androidx.constraintlayout:constraintlayout:1.1.3"
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
+
 
     // sshj
     implementation 'com.hierynomus:sshj:0.27.0'
@@ -44,10 +48,14 @@ dependencies {
     // textdrawable
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
 
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
-
     // 4dp line alignment
     implementation 'com.actinarium.aligned:aligned:0.1'
+
+    // material dialog
+    implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
+    implementation 'com.afollestad.material-dialogs:commons:0.9.1.0'
+
+
 
 }
 
