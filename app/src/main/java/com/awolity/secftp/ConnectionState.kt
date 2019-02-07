@@ -1,5 +1,5 @@
 package com.awolity.secftp
 
-enum class ConnectionState{
-    DISCONNECTED, CONNECTING, CONNECTED, DISCONNECTING, BUSY
+enum class ConnectionState {
+    DISCONNECTED, CONNECTED, BUSY
 }

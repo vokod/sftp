@@ -1,33 +1,21 @@
 package com.awolity.secftp.view.main
 
 import android.animation.Animator
-import android.app.Application
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
-import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
-import android.widget.Toast
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.folderselector.FileChooserDialog
 import com.awolity.secftp.*
-import com.awolity.secftp.ssh.ConnectionData
-import com.awolity.secftp.ssh.SftpOperations
 import kotlinx.android.synthetic.main.activity_main.*
-import net.schmizz.sshj.SSHClient
 import net.schmizz.sshj.sftp.RemoteResourceInfo
 import java.io.File
-import java.io.IOException
-import java.lang.Exception
 import java.security.Security
-import java.util.*
 
 // TODO: permission request
 // TODO: host handling
@@ -60,16 +48,10 @@ class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
                 ConnectionState.DISCONNECTED -> {
                     stopProgress()
                 }
-                ConnectionState.CONNECTING -> {
-                    startProgress()
-                }
                 ConnectionState.CONNECTED -> {
                     stopProgress()
                 }
                 ConnectionState.BUSY -> {
-                    startProgress()
-                }
-                ConnectionState.DISCONNECTING -> {
                     startProgress()
                 }
                 null -> {
@@ -155,7 +137,6 @@ class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
                 }
             })
             .duration = Constants.ANIMATION_DURATION
-
     }
 
     companion object {

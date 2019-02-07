@@ -41,14 +41,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun connect() {
-        _connectionState.postValue(ConnectionState.CONNECTING)
-
+        _connectionState.postValue(ConnectionState.BUSY)
         val connectionData = ConnectionData("192.168.2.76", 22, "user", "asdf")
         SftpOperations.connect(hostFile, connectionData, object : SftpOperations.ConnectListener {
             override fun onConnected(client: SSHClient) {
                 this@MainViewModel.client = client
                 Log.d(TAG, "...onConnected")
-                _connectionState.postValue(ConnectionState.CONNECTED)
                 listDirectory("/", true)
             }
 
@@ -85,9 +83,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun download(item: RemoteResourceInfo) {
         _connectionState.postValue(ConnectionState.BUSY)
-        SftpOperations.downloadFile(
-            client,
-            item,
+        SftpOperations.downloadFile(client, item,
             getApplication<Application>().filesDir,
             object : SftpOperations.DownloadListener {
                 override fun onFileDownloaded(file: File) {
@@ -125,7 +121,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (shallPush) {
             dirs.push(path)
         }
-        _connectionState.postValue(ConnectionState.BUSY)
+        if (_connectionState.value != ConnectionState.BUSY) {
+            _connectionState.postValue(ConnectionState.BUSY)
+        }
         client.let {
             SftpOperations.listDirectory(client, path, object : SftpOperations.ListDirectoryListener {
                 override fun onDirectoryListed(remoteFiles: MutableList<RemoteResourceInfo>) {

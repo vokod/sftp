@@ -1,4 +1,4 @@
-package com.awolity.secftp;
+package com.awolity.secftp.view.main;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.awolity.secftp.R;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 
 import java.util.ArrayList;
@@ -126,7 +127,7 @@ public class RemoteFileAdapter extends RecyclerView.Adapter<RemoteFileAdapter.Re
             itemLinearLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    listener.onDeleteClicked(item);
+                    listener.onLongClicked(item);
                     return true;
                 }
             });
