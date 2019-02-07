@@ -1,6 +1,5 @@
 package com.awolity.secftp.ssh;
 
-import android.content.Context;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.awolity.secftp.AppExecutors;
@@ -10,6 +9,7 @@ import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
+import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import net.schmizz.sshj.xfer.FileSystemFile;
 
 import java.io.File;
@@ -20,10 +20,11 @@ public class SftpOperations {
 
     private static final String TAG = "SftpOperations";
 
-    private SftpOperations(){}
+    private SftpOperations() {
+    }
 
     public static void connect(final File hostfile, final ConnectionData data,
-                        final ConnectListener listener) {
+                               final ConnectListener listener) {
         Log.d(TAG, "connect() called with: hostfile = [" + hostfile + "], data = [" + data + "], listener = [" + listener + "]");
         AppExecutors.getInstance().network().execute(new Runnable() {
             @Override
@@ -37,15 +38,25 @@ public class SftpOperations {
 
                 try {
                     Log.d(TAG, "Connect:");
-                    sshClient.connect(data.getHost(), data.getPn());
-                    Log.d(TAG, "client connected: " + sshClient.isConnected());
-                    Log.d(TAG, "client authenticated: " + sshClient.isAuthenticated());
-                    sshClient.authPassword(data.getUsername(), data.getPassword());
-                    Log.d(TAG, "-----");
-                    Log.d(TAG, "StartSession");
+                    sshClient.connect(data.getHost(), data.getPortNumber());
+                    Log.d(TAG, "...connected");
+                    Log.d(TAG, "Authenticate:");
+                    if (data.getPassword() == null) {
+                        if (data.getPrivateKeyFilePath() == null) {
+                            throw new IllegalStateException("Either password or private key file must be provided");
+                        }
+                        KeyProvider keyProvider = sshClient.loadKeys(data.getPrivateKeyFilePath());
+                        sshClient.authPublickey(data.getUsername(), keyProvider);
+                        Log.d(TAG, "...authenticated with key");
+                    } else {
+                        if (data.getPassword() == null) {
+                            throw new IllegalStateException("Either password or private key file must be provided");
+                        }
+                        sshClient.authPassword(data.getUsername(), data.getPassword());
+                        Log.d(TAG, "...authenticated with password");
+                    }
                     sshClient.startSession();
-                    Log.d(TAG, "client connected: " + sshClient.isConnected());
-                    Log.d(TAG, "client authenticated: " + sshClient.isAuthenticated());
+
                     listener.onConnected(sshClient);
                 } catch (final ConnectionException e) {
                     listener.onConnectionError(new SshException("Connection error", e));
@@ -89,7 +100,7 @@ public class SftpOperations {
     }
 
     public static void downloadFile(final SSHClient sshClient, final RemoteResourceInfo remoteFile,
-                             final File inputDir, final DownloadListener listener) {
+                                    final File inputDir, final DownloadListener listener) {
         AppExecutors.getInstance().network().execute(new Runnable() {
             @Override
             public void run() {
@@ -117,7 +128,7 @@ public class SftpOperations {
     }
 
     public static void deleteFile(final SSHClient sshClient, final RemoteResourceInfo remoteFile,
-                           final DeleteListener listener) {
+                                  final DeleteListener listener) {
         AppExecutors.getInstance().network().execute(new Runnable() {
             @Override
             public void run() {
@@ -152,7 +163,7 @@ public class SftpOperations {
     }
 
     public static void uploadFile(final SSHClient sshClient, final File localFile, final String remotePath,
-                           final UploadListener listener) {
+                                  final UploadListener listener) {
         AppExecutors.getInstance().network().execute(new Runnable() {
             @Override
             public void run() {

@@ -42,7 +42,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun connect() {
         _connectionState.postValue(ConnectionState.BUSY)
-        val connectionData = ConnectionData("192.168.2.76", 22, "user", "asdf")
+        //val connectionData = ConnectionData("192.168.2.76", 22, "user2", password = "asdf", privateKeyFilePath = null)
+        val privateKeyFilePath = File(getApplication<Application>().filesDir,"user4_key").absolutePath
+        val connectionData = ConnectionData("192.168.2.76", 22, "user4", password = null, privateKeyFilePath =privateKeyFilePath )
         SftpOperations.connect(hostFile, connectionData, object : SftpOperations.ConnectListener {
             override fun onConnected(client: SSHClient) {
                 this@MainViewModel.client = client
