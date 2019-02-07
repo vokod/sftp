@@ -1,4 +1,4 @@
-package com.awolity.sftpteszt
+package com.awolity.secftp
 
 import org.junit.Test
 

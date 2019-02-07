@@ -1,4 +1,4 @@
-package com.awolity.sftpteszt
+package com.awolity.secftp
 
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4

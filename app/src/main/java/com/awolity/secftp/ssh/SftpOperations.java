@@ -1,13 +1,11 @@
-package com.awolity.sftpteszt.ssh;
+package com.awolity.secftp.ssh;
 
 import android.content.Context;
 import android.util.Log;
 import androidx.annotation.NonNull;
-import com.awolity.sftpteszt.AppExecutors;
+import com.awolity.secftp.AppExecutors;
 import net.schmizz.sshj.SSHClient;
-import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.ConnectionException;
-import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
 import net.schmizz.sshj.transport.TransportException;
@@ -18,11 +16,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class SshTest {
+public class SftpOperations {
 
-    private static final String TAG = "SshTest";
+    private static final String TAG = "SftpOperations";
 
-    public void connect(final Context context, final ConnectionData data,
+    private SftpOperations(){}
+
+    public static void connect(final Context context, final ConnectionData data,
                         final ConnectListener listener) {
         Log.d(TAG, "connect() called with: context = [" + context + "], data = [" + data + "], listener = [" + listener + "]");
         AppExecutors.getInstance().network().execute(new Runnable() {
@@ -65,7 +65,7 @@ public class SshTest {
         });
     }
 
-    public void listDirectory(final SSHClient sshClient, final String path, final ListDirectoryListener listener) {
+    public static void listDirectory(final SSHClient sshClient, final String path, final ListDirectoryListener listener) {
         Log.d(TAG, "listDirectory() called with: sshClient = [" + sshClient + "], listener = [" + listener + "]");
         AppExecutors.getInstance().network().execute(new Runnable() {
             @Override
@@ -88,7 +88,7 @@ public class SshTest {
         });
     }
 
-    public void downloadFile(final SSHClient sshClient, final RemoteResourceInfo remoteFile,
+    public static void downloadFile(final SSHClient sshClient, final RemoteResourceInfo remoteFile,
                              final File inputDir, final DownloadListener listener) {
         AppExecutors.getInstance().network().execute(new Runnable() {
             @Override
@@ -116,7 +116,7 @@ public class SshTest {
         });
     }
 
-    public void deleteFile(final SSHClient sshClient, final RemoteResourceInfo remoteFile,
+    public static void deleteFile(final SSHClient sshClient, final RemoteResourceInfo remoteFile,
                            final DeleteListener listener) {
         AppExecutors.getInstance().network().execute(new Runnable() {
             @Override
@@ -151,7 +151,7 @@ public class SshTest {
         });
     }
 
-    public void uploadFile(final SSHClient sshClient, final File localFile, final String remotePath,
+    public static void uploadFile(final SSHClient sshClient, final File localFile, final String remotePath,
                            final UploadListener listener) {
         AppExecutors.getInstance().network().execute(new Runnable() {
             @Override

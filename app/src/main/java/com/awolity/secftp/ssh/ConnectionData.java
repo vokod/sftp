@@ -1,4 +1,4 @@
-package com.awolity.sftpteszt.ssh;
+package com.awolity.secftp.ssh;
 
 public class ConnectionData {
 

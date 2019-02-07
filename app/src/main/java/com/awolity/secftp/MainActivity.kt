@@ -1,4 +1,4 @@
-package com.awolity.sftpteszt
+package com.awolity.secftp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.folderselector.FileChooserDialog
-import com.awolity.sftpteszt.ssh.ConnectionData
-import com.awolity.sftpteszt.ssh.SshTest
+import com.awolity.secftp.ssh.ConnectionData
+import com.awolity.secftp.ssh.SftpOperations
 import kotlinx.android.synthetic.main.activity_main.*
 import net.schmizz.sshj.SSHClient
 import net.schmizz.sshj.sftp.RemoteResourceInfo
@@ -19,10 +19,12 @@ import java.lang.Exception
 import java.security.Security
 import java.util.*
 
+// TODO: permission request
+// TODO: host handling
+
 class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
     FileChooserDialog.FileCallback {
 
-    private val sshTest = SshTest()
     private var client: SSHClient? = null
     private lateinit var adapter: RemoteFileAdapter
     private val dirs = ArrayDeque<String>()
@@ -37,7 +39,7 @@ class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
         btn_connect.setOnClickListener {
             Log.d(TAG, "Connecting...")
             val connectionData = ConnectionData("192.168.2.76", 22, "user", "asdf")
-            sshTest.connect(this, connectionData, object : SshTest.ConnectListener {
+            SftpOperations.connect(this, connectionData, object : SftpOperations.ConnectListener {
                 override fun onConnected(client: SSHClient) {
                     this@MainActivity.client = client
                     Log.d(TAG, "...onConnected")
@@ -108,7 +110,7 @@ class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
 
     private fun listDirectory(path: String) {
         client.let {
-            sshTest.listDirectory(client, path, object : SshTest.ListDirectoryListener {
+            SftpOperations.listDirectory(client, path, object : SftpOperations.ListDirectoryListener {
                 override fun onDirectoryListed(remoteFiles: MutableList<RemoteResourceInfo>) {
                     Log.d(TAG, "...onDirectoryListed: \n")
                     AppExecutors.getInstance().mainThread().execute {
@@ -139,7 +141,7 @@ class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
 
     override fun onFileSelection(dialog: FileChooserDialog, file: File) {
         Log.d(TAG, "...onFileSelection")
-        sshTest.uploadFile(client, file, actualDir, object : SshTest.UploadListener {
+        SftpOperations.uploadFile(client, file, actualDir, object : SftpOperations.UploadListener {
             override fun onFileUploaded(result: String) {
                 Log.d(TAG, "...onFileUploaded: $result")
                 listDirectory(actualDir!!)
@@ -158,7 +160,7 @@ class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
     }
 
     override fun onDeleteClicked(item: RemoteResourceInfo) {
-        sshTest.deleteFile(client, item, object : SshTest.DeleteListener {
+        SftpOperations.deleteFile(client, item, object : SftpOperations.DeleteListener {
             override fun onFileDeleted(name: String?) {
                 Log.d(TAG, "onFileDeleted - $name")
                 listDirectory(dirs.peek())
@@ -171,7 +173,7 @@ class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
     }
 
     override fun onLongClicked(item: RemoteResourceInfo) {
-        sshTest.downloadFile(client, item, applicationContext.filesDir, object : SshTest.DownloadListener {
+        SftpOperations.downloadFile(client, item, applicationContext.filesDir, object : SftpOperations.DownloadListener {
             override fun onFileDownloaded(file: File) {
                 Log.d(TAG, "onFileDownloaded - " + file.name)
             }
@@ -193,7 +195,6 @@ class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
         } catch (e: IOException) {
             Log.e(TAG, "error initializing adapter!", e)
         }
-
     }
 
     companion object {

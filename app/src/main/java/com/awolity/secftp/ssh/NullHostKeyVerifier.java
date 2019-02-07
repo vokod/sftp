@@ -1,9 +1,7 @@
-package com.awolity.sftpteszt.ssh;
+package com.awolity.secftp.ssh;
 
 import android.util.Log;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
-import org.spongycastle.asn1.eac.ECDSAPublicKey;
-import org.spongycastle.jcajce.provider.asymmetric.rsa.RSAUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -24,11 +22,11 @@ public class NullHostKeyVerifier implements HostKeyVerifier {
      */
     @Override
     public boolean verify(String arg0, int arg1, PublicKey arg2) {
-        Log.d(TAG, "verify() called with: arg0 = [" + arg0 + "], arg1 = [" + arg1 + "], arg2 = [" + arg2 + "]");
+       /* Log.d(TAG, "verify() called with: arg0 = [" + arg0 + "], arg1 = [" + arg1 + "], arg2 = [" + arg2 + "]");
         Log.d(TAG, "algorithm: "+ arg2.getAlgorithm());
         Log.d(TAG, "fingerprint: "+ toHexString(arg2.getEncoded()));
         //Log.d(TAG, "fingerprint2: "+ getFingerprint((RSAPublicKey)arg2));
-        Log.d(TAG, "format: "+ arg2.getFormat());
+        Log.d(TAG, "format: "+ arg2.getFormat());*/
         return true;
     }
 
