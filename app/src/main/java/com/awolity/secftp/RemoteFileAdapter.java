@@ -29,14 +29,11 @@ public class RemoteFileAdapter extends RecyclerView.Adapter<RemoteFileAdapter.Re
     private final LayoutInflater inflater;
     private final RemoteFileListener remoteFileListener;
     private List<RemoteResourceInfo> items = new ArrayList<>();
-    private boolean isIncoming;
 
     public RemoteFileAdapter(LayoutInflater inflater,
-                             RemoteFileListener remoteFileListener,
-                             boolean isIncoming) {
+                             RemoteFileListener remoteFileListener) {
         this.inflater = inflater;
         this.remoteFileListener = remoteFileListener;
-        this.isIncoming = isIncoming;
     }
 
 

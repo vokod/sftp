@@ -15,7 +15,7 @@
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning"
             tools:replace="android:allowBackup">
-        <activity android:name="com.awolity.secftp.MainActivity">
+        <activity android:name="com.awolity.secftp.view.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

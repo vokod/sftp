@@ -22,15 +22,15 @@ public class SftpOperations {
 
     private SftpOperations(){}
 
-    public static void connect(final Context context, final ConnectionData data,
+    public static void connect(final File hostfile, final ConnectionData data,
                         final ConnectListener listener) {
-        Log.d(TAG, "connect() called with: context = [" + context + "], data = [" + data + "], listener = [" + listener + "]");
+        Log.d(TAG, "connect() called with: hostfile = [" + hostfile + "], data = [" + data + "], listener = [" + listener + "]");
         AppExecutors.getInstance().network().execute(new Runnable() {
             @Override
             public void run() {
                 SSHClient sshClient = new SSHClient(new AndroidConfig());
                 try {
-                    sshClient.loadKnownHosts(new File(context.getFilesDir(), "known_hosts"));
+                    sshClient.loadKnownHosts(hostfile);
                 } catch (final IOException e) {
                     listener.onVerifyError(e);
                 }
