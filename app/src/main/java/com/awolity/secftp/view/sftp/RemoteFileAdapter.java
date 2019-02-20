@@ -1,4 +1,4 @@
-package com.awolity.secftp.view.main;
+package com.awolity.secftp.view.sftp;
 
 import android.view.LayoutInflater;
 import android.view.View;

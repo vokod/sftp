@@ -3,6 +3,7 @@ package com.awolity.secftp;
 public class Constants {
 
     public static final long ANIMATION_DURATION = 500;
+
     public static final String[] extensions = {"a",
             "b",
             "c",

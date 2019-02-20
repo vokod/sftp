@@ -3,6 +3,7 @@ package com.awolity.secftp.ssh;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.awolity.secftp.AppExecutors;
+import com.awolity.secftp.model.SshConnectionData;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
@@ -23,7 +24,7 @@ public class SftpOperations {
     private SftpOperations() {
     }
 
-    public static void connect(final File hostfile, final ConnectionData data,
+    public static void connect(final File hostfile, final SshConnectionData data,
                                final ConnectListener listener) {
         Log.d(TAG, "connect() called with: hostfile = [" + hostfile + "], data = [" + data + "], listener = [" + listener + "]");
         AppExecutors.getInstance().network().execute(new Runnable() {
@@ -38,28 +39,23 @@ public class SftpOperations {
 
                 try {
                     Log.d(TAG, "Connect:");
-                    sshClient.connect(data.getHost(), data.getPortNumber());
+                    sshClient.connect(data.getAddress(), data.getPort());
                     Log.d(TAG, "...connected");
                     Log.d(TAG, "Authenticate:");
-                    if (data.getPassword() == null) {
-                        if (data.getPrivateKeyFilePath() == null) {
-                            throw new IllegalStateException("Either password or private key file must be provided");
-                        }
-                        KeyProvider keyProvider = sshClient.loadKeys(data.getPrivateKeyFilePath());
-                        sshClient.authPublickey(data.getUsername(), keyProvider);
-                        Log.d(TAG, "...authenticated with key");
-                    } else {
-                        if (data.getPassword() == null) {
-                            throw new IllegalStateException("Either password or private key file must be provided");
-                        }
+
+                    if (data.getAuthMethod() == 0) { // password
                         sshClient.authPassword(data.getUsername(), data.getPassword());
                         Log.d(TAG, "...authenticated with password");
+                    } else { // certificate
+                        KeyProvider keyProvider = sshClient.loadKeys(data.getPrivKeyFileName());
+                        sshClient.authPublickey(data.getUsername(), keyProvider);
+                        Log.d(TAG, "...authenticated with key");
                     }
                     sshClient.startSession();
 
                     listener.onConnected(sshClient);
                 } catch (final ConnectionException e) {
-                    listener.onConnectionError(new SshException("Connection error", e));
+                    listener.onConnectionError(new SshException("SshConnectionData error", e));
                 } catch (final TransportException e) {
                     listener.onConnectionError(new SshException("Transport exception error", e));
                     // on TransportException: [HOST_KEY_NOT_VERIFIABLE]

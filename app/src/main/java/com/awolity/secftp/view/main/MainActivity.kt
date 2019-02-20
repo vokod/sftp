@@ -1,145 +1,106 @@
 package com.awolity.secftp.view.main
 
-import android.animation.Animator
-import androidx.appcompat.app.AppCompatActivity
+import android.Manifest
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
-import android.view.animation.DecelerateInterpolator
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.afollestad.materialdialogs.folderselector.FileChooserDialog
-import com.awolity.secftp.*
+import com.awolity.secftp.R
+import com.awolity.secftp.model.SshConnectionData
+import com.awolity.secftp.view.connection.ConnectionDetailsActivity
+import com.awolity.secftp.view.settings.SettingsActivity
+import com.awolity.secftp.view.sftp.SftpActivity
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.listener.single.DialogOnDeniedPermissionListener
 import kotlinx.android.synthetic.main.activity_main.*
-import net.schmizz.sshj.sftp.RemoteResourceInfo
-import java.io.File
-import java.security.Security
 
-// TODO: permission request
-// TODO: host handling
+class MainActivity : AppCompatActivity(), SshConnectionAdapter.SshConnectionListener {
 
-class MainActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
-    FileChooserDialog.FileCallback {
-
-    private lateinit var adapter: RemoteFileAdapter
-    private val mainViewModel: MainViewModel by lazy { ViewModelProviders.of(this).get(MainViewModel::class.java) }
+    private lateinit var adapter: SshConnectionAdapter
+    private lateinit var vm: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        // TODO: move this to application class
-        Security.insertProviderAt(org.spongycastle.jce.provider.BouncyCastleProvider(), 1)
-
-        btn_connect.setOnClickListener { mainViewModel.connect() }
-        btn_discnnect.setOnClickListener { mainViewModel.disconnect() }
-        fab_upload.setOnClickListener {
-            FileChooserDialog.Builder(this)
-                .extensionsFilter(*Constants.extensions)
-                .show()
-        }
-
+        setupWidgets()
+        checkPermission()
         setupRv()
+        setupVm()
+    }
 
-        mainViewModel.connectionState.observe(this, androidx.lifecycle.Observer {
-            when (it) {
-                ConnectionState.DISCONNECTED -> {
-                    stopProgress()
-                }
-                ConnectionState.CONNECTED -> {
-                    stopProgress()
-                }
-                ConnectionState.BUSY -> {
-                    startProgress()
-                }
-                null -> {
-                }
-            }
-        })
+    override fun onStart() {
+        super.onStart()
+        checkPermission()
+    }
 
-        mainViewModel.files.observe(this, androidx.lifecycle.Observer {
-            adapter.updateItems(it)
-        })
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
 
-        mainViewModel.actualDir.observe(this, androidx.lifecycle.Observer {
-            tv_dir.text = it
-        })
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item!!.itemId) {
+            R.id.menu_item_settings ->
+                startActivity(SettingsActivity.getNewIntent(this))
+        }
+        return true
+    }
+
+    override fun onItemClicked(item: SshConnectionData) {
+        startActivity(SftpActivity.getNewIntent(this, item.id))
+    }
+
+    override fun onLongClicked(item: SshConnectionData) {
+        startActivity(ConnectionDetailsActivity.getNewIntent(this, item.id))
+    }
+
+    override fun onDeleteClicked(item: SshConnectionData) {
+        // TODO: rakerdezni
+        vm.deleteConnection(item.id)
+    }
+
+    private fun setupWidgets() {
+        fab_add_host.setOnClickListener { startActivity(ConnectionDetailsActivity.getNewIntent(this@MainActivity, 0)) }
+    }
+
+    private fun checkPermission() {
+        Dexter.withActivity(this)
+            .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .withListener(
+                DialogOnDeniedPermissionListener.Builder
+                    .withContext(this)
+                    .withTitle("Write external storage permission")
+                    .withMessage("Write external storage permission is needed to copy files to and from remote servers.")
+                    .withButtonText(android.R.string.ok)
+                    .withIcon(R.drawable.ic_sd_storage)
+                    .build()
+            )
+            .check()
     }
 
     private fun setupRv() {
-        adapter = RemoteFileAdapter(
-            layoutInflater,
-            this as RemoteFileAdapter.RemoteFileListener
-        )
+        adapter = SshConnectionAdapter(layoutInflater, this as SshConnectionAdapter.SshConnectionListener)
         val linearLayoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        val dividerItemDecoration = DividerItemDecoration(rv_remote.context, linearLayoutManager.orientation)
-        rv_remote.addItemDecoration(dividerItemDecoration)
-        rv_remote.layoutManager = linearLayoutManager
-        rv_remote.adapter = adapter
+        rv_hosts.layoutManager = linearLayoutManager
+        rv_hosts.adapter = adapter
     }
 
-    override fun onFileSelection(dialog: FileChooserDialog, file: File) {
-        mainViewModel.upload(file)
-    }
-
-    override fun onItemClicked(item: RemoteResourceInfo) {
-        if (item.isDirectory) {
-            mainViewModel.listDirectory(item.path, true)
-        }
-    }
-
-    override fun onDeleteClicked(item: RemoteResourceInfo) {
-        mainViewModel.delete(item)
-    }
-
-    override fun onLongClicked(item: RemoteResourceInfo) {
-        if (item.isRegularFile) {
-            mainViewModel.download(item)
-        }
-    }
-
-    override fun onBackPressed() {
-        if (mainViewModel.backOrPop()) {
-            super.onBackPressed()
-        }
-    }
-
-    private fun startProgress() {
-        pb.scaleY = 0.1f
-        pb.visibility = VISIBLE
-        pb.animate()
-            .scaleY(1f)
-            .scaleX(1f)
-            .setInterpolator(DecelerateInterpolator(1.4f))
-            .duration = Constants.ANIMATION_DURATION
-    }
-
-    private fun stopProgress() {
-        pb.animate()
-            .scaleY(0.1f)
-            .scaleX(0.1f)
-            .setInterpolator(DecelerateInterpolator(1.4f))
-            .setListener(object : Animator.AnimatorListener {
-                override fun onAnimationRepeat(animation: Animator?) {
-                }
-
-                override fun onAnimationEnd(animation: Animator?) {
-                    pb.visibility = INVISIBLE
-                }
-
-                override fun onAnimationStart(animation: Animator?) {
-                }
-
-                override fun onAnimationCancel(animation: Animator?) {
-
-                }
-            })
-            .duration = Constants.ANIMATION_DURATION
+    private fun setupVm() {
+        vm = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        vm.getConnections().observe(this, Observer {
+            adapter.updateItems(it)
+        })
     }
 
     companion object {
-        const val TAG = "MainActivity"
+        fun getNewIntent(context: Context): Intent {
+            return Intent(context, MainActivity::class.java)
+        }
     }
 }

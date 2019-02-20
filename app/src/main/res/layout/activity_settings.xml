@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.settings.SettingsActivity">
+
+    <TextView
+            android:text="Security"
+            android:id="@+id/tv_title"
+            style="@style/SettingGroupTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    <com.awolity.settingviews.RadiogroupSetting
+            android:id="@+id/rs_trusted_server"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:titleText="Trusted servers"
+            app:descriptionText="Connect to trusted servers only, or any server, even unknown ones"
+            app:descriptionTextColor="@android:color/secondary_text_light"
+            app:titleTextColor="@android:color/primary_text_light"
+            app:radioButtonLabelTextColor="@android:color/secondary_text_light"
+            app:firstRadioButtonText="Any server"
+            app:secondRadioButtonText="Only trusted servers"
+            app:selected="1"
+            app:iconDrawableResource="@drawable/ic_trusted_server"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.awolity.settingviews.ButtonSetting
+            android:id="@+id/bs_know_hosts_file"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:titleText="Known hosts file"
+            app:descriptionText="Import a file, with the certificate of the known servers. If you import it from a computer, it is usually stored in the user's .ssh directory, and named &quot;known_hosts&quot;"
+            app:descriptionTextColor="@android:color/secondary_text_light"
+            app:titleTextColor="@android:color/primary_text_light"
+            app:isCheckable="true"
+            app:checked="false"
+            app:iconDrawableResource="@drawable/ic_import_known_hosts"
+            app:layout_constraintTop_toBottomOf="@+id/rs_trusted_server"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.awolity.settingviews.RadiogroupSetting
+            android:id="@+id/rs_default_auth_method"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:titleText="Default authentication method"
+            app:titleTextColor="@android:color/primary_text_light"
+            app:radioButtonLabelTextColor="@android:color/secondary_text_light"
+            app:firstRadioButtonText="Password"
+            app:secondRadioButtonText="Certificate"
+            app:selected="1"
+            app:iconDrawableResource="@drawable/ic_default_auth_method"
+            app:layout_constraintTop_toBottomOf="@+id/bs_know_hosts_file"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    <View android:layout_width="match_parent" android:layout_height="2dp"
+          android:background="@color/grey"
+          app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/rs_default_auth_method"
+          style="@style/SettingGroupDivider"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
