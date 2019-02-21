@@ -30,7 +30,7 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sftp)
-        setSupportActionBar(toolbar)
+
 
         setupRv()
         setupWidgets()
@@ -40,7 +40,10 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
     }
 
     private fun setupWidgets() {
-        toolbar.title = intent.getStringExtra(EXTRA_NAME)
+        toolbar.title = ""
+        setSupportActionBar(toolbar)
+        val title = intent.getStringExtra(EXTRA_NAME)
+        supportActionBar?.title = title
         fab_upload.setOnClickListener {
             FileChooserDialog.Builder(this)
                 .extensionsFilter(*Constants.extensions)
@@ -82,7 +85,7 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
         })
 
         sftpViewModel.actualDir.observe(this, androidx.lifecycle.Observer {
-            tv_dir.text = it
+            tv_dir.text = it.replace("/","  /  ")
         })
     }
 
