@@ -19,24 +19,27 @@ import kotlin.collections.ArrayList
 
 class SftpViewModel(application: Application) : AndroidViewModel(application) {
 
+    private var isSearchedRightNow = false
+    private var _files: MutableLiveData<List<RemoteResourceInfo>> = MutableLiveData()
+    private var _actualDir: MutableLiveData<String> = MutableLiveData()
     private var _connectionState: MutableLiveData<ConnectionState> = MutableLiveData()
+    private var client: SSHClient? = null
+    private var hostFile: File
+    private val dirs = ArrayDeque<String>()
+
     var connectionState: LiveData<ConnectionState> = _connectionState
         get() = _connectionState
-
-    private var _files: MutableLiveData<List<RemoteResourceInfo>> = MutableLiveData()
+        private set
 
     var files: LiveData<List<RemoteResourceInfo>> = _files
         get() = _files
-    private val dirs = ArrayDeque<String>()
+        private set
 
-    private var _actualDir: MutableLiveData<String> = MutableLiveData()
     var actualDir: LiveData<String> = _actualDir
         get() = _actualDir
-    private var client: SSHClient? = null
-    private var hostFile: File
+        private set
 
     var sortBy = 0
-    private var isSearchedRightNow = false
 
     init {
         _connectionState.postValue(ConnectionState.DISCONNECTED)
