@@ -22,7 +22,7 @@
                 android:layout_height="match_parent"
                 android:hint="Name (can be anything)"
                 android:singleLine="true"
-                android:inputType="text"/>
+                android:inputType="textCapSentences"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout

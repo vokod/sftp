@@ -25,7 +25,8 @@
         </activity>
         <activity android:name=".view.connection.ConnectionDetailsActivity">
         </activity>
-        <activity android:name=".view.sftp.SftpActivity">
+        <activity android:name=".view.sftp.SftpActivity"
+                  android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name=".view.settings.SettingsActivity"
                   android:label="Settings"

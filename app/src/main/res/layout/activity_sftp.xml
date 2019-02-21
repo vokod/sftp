@@ -7,47 +7,52 @@
         android:layout_height="match_parent"
         tools:context=".view.sftp.SftpActivity">
 
-    <Button
-            android:text="Disconnect"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btn_discnnect"
+    <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="96dp"
+            android:background="@color/colorPrimary"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="8dp" android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"/>
+            android:id="@+id/toolbar"
+
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="bottom">
+            <TextView
+                    android:id="@+id/tv_dir"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:layout_marginBottom="16dp"/>
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
     <ProgressBar
+            android:id="@+id/pb"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/pb"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toTopOf="parent"
-            android:visibility="invisible"/>
-
-    <TextView
-            android:id="@+id/tv_dir_label"
-            android:text="Directory:"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/tv_dir"
-            android:layout_marginStart="8dp" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/btn_discnnect"/>
-
-    <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" android:id="@+id/tv_dir"
-            app:layout_constraintStart_toEndOf="@+id/tv_dir_label"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginStart="8dp" android:layout_marginEnd="8dp" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/btn_discnnect"/>
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
+
+
     <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_remote"
             android:layout_width="0dp"
-            android:layout_height="0dp" app:layout_constraintTop_toBottomOf="@+id/tv_dir"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
-            android:id="@+id/rv_remote" android:background="@color/light_grey" android:layout_marginTop="8dp"/>
+            android:layout_height="0dp"
+            android:background="@color/light_grey"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            tools:listitem="@layout/item_incoming"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"

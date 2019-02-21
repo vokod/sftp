@@ -174,7 +174,7 @@ public class SftpOperations {
                     return;
                 }
                 try (SFTPClient sftp = sshClient.newSFTPClient()) {
-                    sftp.put(new FileSystemFile(localFile.getAbsolutePath()), remotePath + localFile.getName());
+                    sftp.put(new FileSystemFile(localFile.getAbsolutePath()), remotePath + "/" + localFile.getName());
                     listener.onFileUploaded(localFile.getName());
                 } catch (IOException e) {
                     listener.onError(new SshException("IO exception error", e));
@@ -183,36 +183,6 @@ public class SftpOperations {
 
         });
     }
-
-
-
-  /*  public void upload(final File file, final UploadListener listener) {
-        AppExecutors.getInstance().network().execute(new Runnable() {
-            @Override
-            public void run() {
-                String result = "\nUploading file file \"" + file.getName() + "\"...";
-                if (sshClient == null) {
-                    result += "\nNot yet connected!";
-                } else {
-                    try (SFTPClient sftp = sshClient.newSFTPClient()) {
-                        sftp.put(new FileSystemFile(file.getAbsolutePath()), "/" + file.getName());
-                        result += "\nsuccess";
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        result += "\n" + e.getLocalizedMessage();
-                    }
-                }
-                final String finalResult = result;
-                AppExecutors.getInstance().mainThread().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        listener.onFileUploaded(finalResult);
-                    }
-                });
-            }
-        });
-
-    }*/
 
     public void disconnect(final SSHClient sshClient, final DisconnectListener listener) {
         AppExecutors.getInstance().network().execute(new Runnable() {

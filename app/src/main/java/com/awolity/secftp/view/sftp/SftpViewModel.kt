@@ -39,6 +39,8 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         hostFile = File(application.filesDir, "known_hosts")
     }
 
+
+
     fun connect(id: Long) {
         _connectionState.postValue(ConnectionState.BUSY)
         AppExecutors.getInstance().diskIO().execute {

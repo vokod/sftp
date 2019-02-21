@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.animation.DecelerateInterpolator
@@ -29,6 +30,7 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sftp)
+        setSupportActionBar(toolbar)
 
         setupRv()
         setupWidgets()
@@ -37,8 +39,8 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
         sftpViewModel.connect(intent.getLongExtra(EXTRA_ID, 0L))
     }
 
-    private fun setupWidgets(){
-        btn_discnnect.setOnClickListener { sftpViewModel.disconnect() }
+    private fun setupWidgets() {
+        toolbar.title = intent.getStringExtra(EXTRA_NAME)
         fab_upload.setOnClickListener {
             FileChooserDialog.Builder(this)
                 .extensionsFilter(*Constants.extensions)
@@ -58,7 +60,7 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
         rv_remote.adapter = adapter
     }
 
-    private fun setupObservers(){
+    private fun setupObservers() {
         sftpViewModel.connectionState.observe(this, androidx.lifecycle.Observer {
             when (it) {
                 ConnectionState.DISCONNECTED -> {
@@ -111,6 +113,11 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_sftp, menu)
+        return true
+    }
+
     private fun startProgress() {
         pb.scaleY = 0.1f
         pb.visibility = VISIBLE
@@ -147,10 +154,12 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener,
     companion object {
         const val TAG = "SftpActivity"
         private const val EXTRA_ID = "id"
+        private const val EXTRA_NAME = "name"
 
-        fun getNewIntent(context: Context, id: Long): Intent {
+        fun getNewIntent(context: Context, id: Long, name: String): Intent {
             val intent = Intent(context, SftpActivity::class.java)
             intent.putExtra(EXTRA_ID, id)
+            intent.putExtra(EXTRA_NAME, name)
             return intent
         }
     }

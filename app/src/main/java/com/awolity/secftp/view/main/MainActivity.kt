@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity(), SshConnectionAdapter.SshConnectionList
     }
 
     override fun onItemClicked(item: SshConnectionData) {
-        startActivity(SftpActivity.getNewIntent(this, item.id))
+        startActivity(SftpActivity.getNewIntent(this, item.id, item.name))
     }
 
     override fun onLongClicked(item: SshConnectionData) {

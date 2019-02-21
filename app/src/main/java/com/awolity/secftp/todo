@@ -3,3 +3,4 @@
 // TODO: nice to have: sshConnectionData editnel a regi key fajlokat torolni kellene
 // TODO: nice to have: titkositani a db-ben a jelszavakat (yavel)
 // TODO: nice to have: titkositani a kulcs es known_host file-t, mint value-t es berakni a db-be/sp-be
+// TODO: ha nincs known_hosts, akkor automatikusan legyen promiszkus
