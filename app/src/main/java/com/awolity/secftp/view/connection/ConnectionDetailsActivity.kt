@@ -9,15 +9,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.afollestad.materialdialogs.folderselector.FileChooserDialog
-import com.awolity.secftp.Constants
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.files.fileChooser
 import com.awolity.secftp.R
 import com.awolity.secftp.model.SshConnectionData
 import com.awolity.settingviews.RadiogroupSetting
 import kotlinx.android.synthetic.main.activity_connection.*
 import java.io.File
 
-class ConnectionDetailsActivity : AppCompatActivity(), FileChooserDialog.FileCallback {
+class ConnectionDetailsActivity : AppCompatActivity() {
 
     private lateinit var vm: ConnectionDetailsViewModel
     private var pubKeyFile: String = ""
@@ -56,14 +56,6 @@ class ConnectionDetailsActivity : AppCompatActivity(), FileChooserDialog.FileCal
         return true
     }
 
-    override fun onFileSelection(dialog: FileChooserDialog, file: File) {
-        if (dialog.tag == TAG_PRIV_KEY) {
-            privKeyFile = file.absolutePath
-        } else if (dialog.tag == TAG_PUB_KEY) {
-            pubKeyFile = file.absolutePath
-        }
-    }
-
     private fun setupWidgets() {
         rs_auth_type.setListener(object : RadiogroupSetting.RadiogroupSettingListener {
             override fun OnRadioButtonClicked(selected: Int) {
@@ -80,17 +72,19 @@ class ConnectionDetailsActivity : AppCompatActivity(), FileChooserDialog.FileCal
         })
 
         bs_pub_key.setOnClickListener {
-            FileChooserDialog.Builder(this@ConnectionDetailsActivity)
-                .tag(TAG_PUB_KEY)
-                .extensionsFilter(*Constants.extensions)
-                .show()
+            MaterialDialog(this).show {
+                fileChooser { _, file ->
+                    pubKeyFile = file.absolutePath
+                }
+            }
         }
 
         bs_priv_key.setOnClickListener {
-            FileChooserDialog.Builder(this@ConnectionDetailsActivity)
-                .tag(TAG_PRIV_KEY)
-                .extensionsFilter(*Constants.extensions)
-                .show()
+            MaterialDialog(this).show {
+                fileChooser { _, file ->
+                    privKeyFile = file.absolutePath
+                }
+            }
         }
     }
 

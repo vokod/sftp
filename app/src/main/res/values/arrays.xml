@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="sortby">
+        <item>@string/sortby_name</item>
+        <item>@string/sortby_size</item>
+        <item>@string/sortby_date</item>
+    </array>
+
+</resources>

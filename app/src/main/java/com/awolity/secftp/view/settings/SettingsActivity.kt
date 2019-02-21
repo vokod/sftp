@@ -5,13 +5,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.afollestad.materialdialogs.folderselector.FileChooserDialog
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.files.fileChooser
 import com.awolity.secftp.*
 import com.awolity.settingviews.RadiogroupSetting
+import kotlinx.android.synthetic.main.activity_connection.*
 import kotlinx.android.synthetic.main.activity_settings.*
 import java.io.File
 
-class SettingsActivity : AppCompatActivity(), FileChooserDialog.FileCallback {
+class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,18 +39,18 @@ class SettingsActivity : AppCompatActivity(), FileChooserDialog.FileCallback {
 
         bs_know_hosts_file.checked = File(filesDir, KNOWN_HOSTS_FILE_NAME).exists()
         bs_know_hosts_file.setOnClickListener {
-            FileChooserDialog.Builder(this@SettingsActivity)
-                .extensionsFilter(*Constants.extensions)
-                .show()
-        }
-    }
-
-    override fun onFileSelection(dialog: FileChooserDialog, file: File) {
-        try {
-            file.copyTo(File(filesDir, KNOWN_HOSTS_FILE_NAME), overwrite = true)
-            if (!bs_know_hosts_file.checked) bs_know_hosts_file.check()
-        } catch (e: Exception) {
-            Toast.makeText(this, "Some error occurred", Toast.LENGTH_LONG).show()
+            bs_pub_key.setOnClickListener {
+                MaterialDialog(this).show {
+                    fileChooser { _, file ->
+                        try {
+                            file.copyTo(File(filesDir, KNOWN_HOSTS_FILE_NAME), overwrite = true)
+                            if (!bs_know_hosts_file.checked) bs_know_hosts_file.check()
+                        } catch (e: Exception) {
+                            Toast.makeText(this@SettingsActivity, "Some error occurred", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            }
         }
     }
 

@@ -184,7 +184,7 @@ public class SftpOperations {
         });
     }
 
-    public void disconnect(final SSHClient sshClient, final DisconnectListener listener) {
+    public static void disconnect(final SSHClient sshClient, final DisconnectListener listener) {
         AppExecutors.getInstance().network().execute(new Runnable() {
             @Override
             public void run() {

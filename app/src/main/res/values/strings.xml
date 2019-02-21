@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Sftp client</string>
+
+
+    <string name="sortby_name">File name</string>
+    <string name="sortby_size">File size</string>
+    <string name="sortby_date">Modification time</string>
+
+    <string name="search">Search</string>
 </resources>

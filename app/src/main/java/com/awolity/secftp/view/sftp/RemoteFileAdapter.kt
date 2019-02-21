@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.awolity.secftp.R
+import com.awolity.secftp.epochToDateTime
 import com.awolity.secftp.getInitial
 import com.awolity.secftp.humanReadableByteCount
 import net.schmizz.sshj.sftp.RemoteResourceInfo
@@ -91,7 +92,10 @@ class RemoteFileAdapter(
                 else -> {
                     initialImageView.setImageDrawable(getInitial(item.name))
                     descriptionTextView.text =
-                        humanReadableByteCount(item.attributes.size, false) + item.attributes.mtime
+                        humanReadableByteCount(
+                            item.attributes.size,
+                            false
+                        ) + ",   " + epochToDateTime(item.attributes.mtime)
 
                 }
             }

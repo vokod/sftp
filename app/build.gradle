@@ -54,8 +54,8 @@ dependencies {
     implementation 'com.actinarium.aligned:aligned:0.1'
 
     // material dialog
-    implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
-    implementation 'com.afollestad.material-dialogs:commons:0.9.1.0'
+    implementation 'com.afollestad.material-dialogs:core:2.0.0'
+    implementation 'com.afollestad.material-dialogs:files:2.0.0'
 
     //setting views
     implementation 'com.github.vokod:SettingViews:-SNAPSHOT'

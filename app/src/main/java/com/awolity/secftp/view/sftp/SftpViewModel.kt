@@ -22,7 +22,9 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
     private var _connectionState: MutableLiveData<ConnectionState> = MutableLiveData()
     var connectionState: LiveData<ConnectionState> = _connectionState
         get() = _connectionState
+
     private var _files: MutableLiveData<List<RemoteResourceInfo>> = MutableLiveData()
+
     var files: LiveData<List<RemoteResourceInfo>> = _files
         get() = _files
     private val dirs = ArrayDeque<String>()
@@ -33,13 +35,14 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
     private var client: SSHClient? = null
     private var hostFile: File
 
+    var sortBy = 0
+    private var isSearchedRightNow = false
+
     init {
         _connectionState.postValue(ConnectionState.DISCONNECTED)
         _files.value = ArrayList()
         hostFile = File(application.filesDir, "known_hosts")
     }
-
-
 
     fun connect(id: Long) {
         _connectionState.postValue(ConnectionState.BUSY)
@@ -67,7 +70,18 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun disconnect() {}
+    fun disconnect() {
+        SftpOperations.disconnect(client, object : SftpOperations.DisconnectListener {
+            override fun onDisconnected() {
+                Log.d(SftpActivity.TAG, "...onDisconnected")
+            }
+
+            override fun onError(e: java.lang.Exception?) {
+                Log.d(SftpActivity.TAG, "...onError: " + e?.localizedMessage)
+                // TODO: message
+            }
+        })
+    }
 
     fun upload(file: File) {
         _connectionState.postValue(ConnectionState.BUSY)
@@ -132,11 +146,9 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
             SftpOperations.listDirectory(client, path, object : SftpOperations.ListDirectoryListener {
                 override fun onDirectoryListed(remoteFiles: MutableList<RemoteResourceInfo>) {
                     Log.d(TAG, "...onDirectoryListed: \n")
-                    AppExecutors.getInstance().mainThread().execute {
-                        _files.value = remoteFiles
-                        _actualDir.value = path
-                        _connectionState.postValue(ConnectionState.CONNECTED)
-                    }
+                    sort(remoteFiles)
+                    _actualDir.postValue(path)
+                    _connectionState.postValue(ConnectionState.CONNECTED)
                 }
 
                 override fun onError(e: Exception?) {
@@ -148,11 +160,40 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun sort() {
+        sort(_files.value)
+    }
+
+    private fun sort(items: List<RemoteResourceInfo>?) {
+        when (sortBy) {
+            0 -> {
+                _files.postValue(items?.sortedBy { it.name })
+            }
+            1 -> {
+                _files.postValue(items?.sortedBy { it.attributes.size })
+            }
+            2 -> {
+                _files.postValue(items?.sortedBy { it.attributes.mtime })
+            }
+            else -> {
+                _files.postValue(items?.sortedBy { it.name })
+            }
+        }
+    }
+
+    fun search(text: String) {
+        isSearchedRightNow = true
+        _files.postValue(_files.value?.filter {
+            it.name.contains(text, ignoreCase = true)
+        })
+    }
+
     fun backOrPop(): Boolean {
         Log.d(TAG, "back")
         return try {
-            val dir = dirs.pop()
-            Log.d(TAG, dir)
+            if (!isSearchedRightNow) {
+                dirs.pop()
+            }
             listDirectory(dirs.peek(), false)
             false
         } catch (e: NoSuchElementException) {
