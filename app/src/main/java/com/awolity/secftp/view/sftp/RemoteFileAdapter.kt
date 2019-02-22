@@ -24,9 +24,7 @@ class RemoteFileAdapter(
     interface RemoteFileListener {
         fun onItemClicked(item: RemoteResourceInfo)
 
-        fun onDeleteClicked(item: RemoteResourceInfo)
-
-        fun onLongClicked(item: RemoteResourceInfo)
+        fun onLongClicked(item: RemoteResourceInfo, itemView: View)
     }
 
     fun updateItems(newItems: List<RemoteResourceInfo>?) {
@@ -79,7 +77,7 @@ class RemoteFileAdapter(
         fun bind(item: RemoteResourceInfo) {
             clickOverlay.setOnClickListener { listener.onItemClicked(item) }
             clickOverlay.setOnLongClickListener {
-                listener.onLongClicked(item)
+                listener.onLongClicked(item, itemView)
                 true
             }
             titleTextView.text = item.name

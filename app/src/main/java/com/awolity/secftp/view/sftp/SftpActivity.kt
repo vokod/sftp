@@ -6,10 +6,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.animation.DecelerateInterpolator
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.menu.ActionMenuItemView
+import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +25,7 @@ import com.afollestad.materialdialogs.list.listItemsSingleChoice
 import com.awolity.secftp.ConnectionState
 import com.awolity.secftp.Constants
 import com.awolity.secftp.R
+import com.awolity.secftp.view.main.MainActivity
 import kotlinx.android.synthetic.main.activity_sftp.*
 import net.schmizz.sshj.sftp.RemoteResourceInfo
 
@@ -44,13 +49,32 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
         }
     }
 
-    override fun onDeleteClicked(item: RemoteResourceInfo) {
-        sftpViewModel.delete(item)
-    }
-
-    override fun onLongClicked(item: RemoteResourceInfo) {
+    override fun onLongClicked(item: RemoteResourceInfo, itemView: View) {
         if (item.isRegularFile) {
-            sftpViewModel.download(item)
+            val popup = PopupMenu(this@SftpActivity, itemView)
+            popup.menuInflater.inflate(R.menu.menu_sftp_popup, popup.menu)
+
+            popup.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.menu_item_download -> {
+                        sftpViewModel.download(item)
+                        true
+                    }
+                    R.id.menu_item_delete -> {
+                        MaterialDialog(this@SftpActivity).show {
+                            title(text = "Delete")
+                            message(text = "Do you really want to delete the file ${item.name}?")
+                            positiveButton { sftpViewModel.delete(item) }
+                            negativeButton { dismiss() }
+                        }
+                        true
+                    }
+                    else -> {
+                        false
+                    }
+                }
+            }
+            popup.show()
         }
     }
 
@@ -84,7 +108,7 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
                     input { _, text ->
                         sftpViewModel.search(text.toString())
                     }
-                    positiveButton(R.string.search)
+                    positiveButton(text = "Search")
                 }
             }
         }
@@ -139,7 +163,7 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
         })
 
         sftpViewModel.actualDir.observe(this, androidx.lifecycle.Observer {
-            tv_dir.text = it.replace("/","  /  ")
+            tv_dir.text = it.replace("/", "  /  ")
         })
     }
 

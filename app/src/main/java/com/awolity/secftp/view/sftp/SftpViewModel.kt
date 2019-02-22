@@ -1,6 +1,7 @@
 package com.awolity.secftp.view.sftp
 
 import android.app.Application
+import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -106,8 +107,7 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
 
     fun download(item: RemoteResourceInfo) {
         _connectionState.postValue(ConnectionState.BUSY)
-        sftpClient.downloadFile(item,
-            getApplication<Application>().filesDir,
+        sftpClient.downloadFile(item, File(Environment.getExternalStorageDirectory(),"/Download"),
             object : SftpClient.DownloadListener {
                 override fun onFileDownloaded(file: File) {
                     Log.d(TAG, "onFileDownloaded - " + file.name)
