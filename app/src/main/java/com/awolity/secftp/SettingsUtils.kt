@@ -19,6 +19,10 @@ fun setOnlyTrustedServers(context: Context, setting: Boolean) {
     Yapel.get(YAPEL_KEY, context).setBoolean(KEY_ONLY_TRUSTED_SERVERS, setting)
 }
 
+fun isOnlyTrustedServersSet(context: Context): Boolean {
+    return Yapel.get(YAPEL_KEY, context).contains(KEY_ONLY_TRUSTED_SERVERS)
+}
+
 fun isHostKnown(context: Context, hostname: String): Boolean {
     if (!knownHostsFileExist(context)) return false
     val matchingHosts = readKnownHostsFile(File(context.filesDir, KNOWN_HOSTS_FILE_NAME))
