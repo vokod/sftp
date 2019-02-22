@@ -10,10 +10,9 @@ import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.animation.DecelerateInterpolator
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,12 +21,11 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.files.fileChooser
 import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.list.listItemsSingleChoice
-import com.awolity.secftp.ConnectionState
 import com.awolity.secftp.Constants
 import com.awolity.secftp.R
-import com.awolity.secftp.view.main.MainActivity
 import kotlinx.android.synthetic.main.activity_sftp.*
 import net.schmizz.sshj.sftp.RemoteResourceInfo
+import org.jetbrains.anko.toast
 
 class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
 
@@ -40,7 +38,9 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
         setupRv()
         setupWidgets()
         setupObservers()
-        sftpViewModel.connect(intent.getLongExtra(EXTRA_ID, 0L))
+        if (!sftpViewModel.isOnline()) {
+            sftpViewModel.connect(intent.getLongExtra(EXTRA_ID, 0L))
+        }
     }
 
     override fun onItemClicked(item: RemoteResourceInfo) {
@@ -80,7 +80,6 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
 
     override fun onBackPressed() {
         if (sftpViewModel.backOrPop()) {
-            sftpViewModel.disconnect()
             super.onBackPressed()
         }
     }
@@ -142,21 +141,24 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
     }
 
     private fun setupObservers() {
-        sftpViewModel.connectionState.observe(this, androidx.lifecycle.Observer {
-            when (it) {
-                ConnectionState.DISCONNECTED -> { stopProgress() }
-                ConnectionState.CONNECTED -> { stopProgress() }
-                ConnectionState.BUSY -> { startProgress() }
-                null -> { }
+        sftpViewModel.isBusy.observe(this, androidx.lifecycle.Observer {
+            if (it) {
+                startProgress()
+            } else {
+                stopProgress()
             }
         })
 
-        sftpViewModel.files.observe(this, androidx.lifecycle.Observer {
+        sftpViewModel.files.observe(this, Observer {
             adapter.updateItems(it)
         })
 
-        sftpViewModel.actualDir.observe(this, androidx.lifecycle.Observer {
+        sftpViewModel.actualDir.observe(this, Observer {
             tv_dir.text = it.replace("/", "  /  ")
+        })
+
+        sftpViewModel.message.observe(this, Observer {
+            toast(it)
         })
     }
 

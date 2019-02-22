@@ -6,18 +6,17 @@ import com.awolity.secftp.model.SshConnectionData
 import net.schmizz.sshj.SSHClient
 import net.schmizz.sshj.connection.ConnectionException
 import net.schmizz.sshj.sftp.RemoteResourceInfo
-import net.schmizz.sshj.sftp.SFTPClient
 import net.schmizz.sshj.transport.TransportException
 import net.schmizz.sshj.userauth.UserAuthException
-import net.schmizz.sshj.userauth.keyprovider.KeyProvider
 import net.schmizz.sshj.xfer.FileSystemFile
-
 import java.io.File
 import java.io.IOException
 
 class SftpClient {
 
     private val client: SSHClient = SSHClient(AndroidConfig())
+
+    fun isOnline() = client.isAuthenticated
 
     fun connect(
         hostfile: File, data: SshConnectionData,
