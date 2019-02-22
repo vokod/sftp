@@ -1,7 +1,4 @@
 // TODO: important: sshConnectionData activitynel a billentyuzet kitakarja a tartalmat
-// TODO: important: kilépés előtt kérdezzen rá
-// TODO: nice to have: hide hidden files
-// TODO: zavarnak a fekete szovegek
 // TODO: nice to have: sshConnectionData editnel a regi key fajlokat torolni kellene
 // TODO: nice to have: titkositani a db-ben a jelszavakat (yavel)
 // TODO: nice to have: titkositani a kulcs es known_host file-t, mint value-t es berakni a db-be/sp-be

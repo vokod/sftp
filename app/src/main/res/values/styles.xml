@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="SecftpAppTheme" parent="Theme.MaterialComponents.Light">
+    <style name="SecftpAppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -9,11 +9,16 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
         <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:toolbarStyle">@style/SecftpToolbarStyle</item>
     </style>
 
     <style name="SecftpAppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light"/>
 
     <style name="SecftpAppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
+
+    <style name="SecftpToolbarStyle" >
+        <item name="android:textColorPrimary">@android:color/white</item>
+    </style>
 
 
     <style name="SecftpAppTheme.NoActionBar">

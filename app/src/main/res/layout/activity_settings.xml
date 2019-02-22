@@ -9,7 +9,7 @@
 
     <TextView
             android:text="Security"
-            android:id="@+id/tv_title"
+            android:id="@+id/tv_title_security"
             style="@style/SettingGroupTitle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
@@ -28,7 +28,7 @@
             app:secondRadioButtonText="Only trusted servers"
             app:selected="1"
             app:iconDrawableResource="@drawable/ic_trusted_server"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title_security"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -60,6 +60,34 @@
             app:titleTextColor="@android:color/primary_text_light"
             app:iconDrawableResource="@drawable/ic_edit_black_24dp"
             app:layout_constraintTop_toBottomOf="@+id/bs_known_hosts_file"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    <View android:id="@+id/divider_1"
+          android:layout_width="match_parent"
+          android:layout_height="1dp"
+          android:background="@color/grey"
+          style="@style/SettingGroupDivider"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/bs_edit_known_hosts"/>
+
+    <TextView
+            android:text="Miscellanous"
+            android:id="@+id/tv_title_misc"
+            style="@style/SettingGroupTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider_1"/>
+
+    <com.awolity.settingviews.SwitchSetting
+            android:id="@+id/ss_show_hidden_files"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:titleText="Show hidden files"
+            app:titleTextColor="@android:color/primary_text_light"
+            app:iconDrawableResource="@drawable/ic_file_hidden"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title_misc"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 

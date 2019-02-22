@@ -6,10 +6,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.awolity.secftp.AppExecutors
-import com.awolity.secftp.SecftpApplication
-import com.awolity.secftp.getKnownHostsFile
-import com.awolity.secftp.getOnlyTrustedServers
+import com.awolity.secftp.*
 import com.awolity.secftp.model.SshConnectionDatabase
 import com.awolity.secftp.ssh.SftpClient
 import com.awolity.secftp.ssh.SftpClient.ConnectListener
@@ -25,9 +22,9 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
     private var _files: MutableLiveData<List<RemoteResourceInfo>> = MutableLiveData()
     private var _actualDir: MutableLiveData<String> = MutableLiveData()
     private var _isBusy: MutableLiveData<Boolean> = MutableLiveData()
+    private var _message: MutableLiveData<String> = MutableLiveData()
     private val sftpClient: SftpClient
     private val dirs = ArrayDeque<String>()
-    private var _message: MutableLiveData<String> = MutableLiveData()
 
     var isBusy: LiveData<Boolean> = _isBusy
         get() = _isBusy
@@ -68,7 +65,7 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    val connectListener = object : ConnectListener {
+    private val connectListener = object : ConnectListener {
         override fun onConnected() {
             Log.d(TAG, "...onConnected")
             listDirectory("/", true)
@@ -86,7 +83,7 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun disconnect() {
+    fun disconnect() {
         _isBusy.postValue(true)
         sftpClient.disconnect(object : SftpClient.DisconnectListener {
 
@@ -163,7 +160,11 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         sftpClient.listDirectory(path, object : SftpClient.ListDirectoryListener {
             override fun onDirectoryListed(remoteFiles: List<RemoteResourceInfo>) {
                 Log.d(TAG, "...onDirectoryListed:")
-                sort(remoteFiles)
+                if (!getShowHiddenFiles(getApplication())) {
+                    _files.postValue(sort(filterHidden(remoteFiles)))
+                } else {
+                    _files.postValue(sort(remoteFiles))
+                }
                 _actualDir.postValue(path)
                 _isBusy.postValue(false)
             }
@@ -177,24 +178,28 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun sort() {
-        sort(_files.value)
+        _files.postValue(sort(_files.value))
     }
 
-    private fun sort(items: List<RemoteResourceInfo>?) {
-        when (sortBy) {
+    private fun sort(items: List<RemoteResourceInfo>?): List<RemoteResourceInfo>? {
+        return when (sortBy) {
             0 -> {
-                _files.postValue(items?.sortedBy { it.name })
+                (items?.sortedBy { it.name })
             }
             1 -> {
-                _files.postValue(items?.sortedBy { it.attributes.size })
+                (items?.sortedBy { it.attributes.size })
             }
             2 -> {
-                _files.postValue(items?.sortedBy { it.attributes.mtime })
+                (items?.sortedBy { it.attributes.mtime })
             }
             else -> {
-                _files.postValue(items?.sortedBy { it.name })
+                (items?.sortedBy { it.name })
             }
         }
+    }
+
+    private fun filterHidden(items: List<RemoteResourceInfo>): List<RemoteResourceInfo> {
+        return items.filter { !it.name.startsWith('.') }
     }
 
     fun search(text: String) {
@@ -211,7 +216,6 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
                 dirs.pop()
             }
             if (dirs.peek() == null) {
-                disconnect()
                 true
             } else {
                 listDirectory(dirs.peek(), false)

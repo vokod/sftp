@@ -16,21 +16,24 @@
             android:theme="@style/SecftpAppTheme"
             tools:ignore="GoogleAppIndexingWarning"
             tools:replace="android:allowBackup">
-        <activity android:name=".view.main.MainActivity">
+        <activity android:name=".view.main.MainActivity"
+                  android:theme="@style/SecftpAppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".view.connection.ConnectionDetailsActivity">
+        <activity android:name=".view.connection.ConnectionDetailsActivity"
+                  android:windowSoftInputMode="adjustResize|adjustPan">
         </activity>
         <activity android:name=".view.sftp.SftpActivity"
                   android:theme="@style/SecftpAppTheme.NoActionBar">
         </activity>
         <activity android:name=".view.settings.SettingsActivity"
                   android:label="Settings"
-                  android:parentActivityName=".view.sftp.SftpActivity"/>
+                  android:parentActivityName=".view.sftp.SftpActivity"
+                  android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>

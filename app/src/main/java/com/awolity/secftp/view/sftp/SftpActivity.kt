@@ -79,7 +79,15 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
 
     override fun onBackPressed() {
         if (sftpViewModel.backOrPop()) {
-            super.onBackPressed()
+            MaterialDialog(this).show {
+                title(text = "Disconnect")
+                message(text = "Do you really want to close connection?")
+                positiveButton {
+                    sftpViewModel.disconnect()
+                    super.onBackPressed()
+                }
+                negativeButton { dismiss() }
+            }
         }
     }
 
@@ -108,6 +116,10 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
                     }
                     positiveButton(text = "Search")
                 }
+            }
+            R.id.menu_item_disconnect -> {
+                sftpViewModel.disconnect()
+                this.finish()
             }
         }
         return true

@@ -3,6 +3,7 @@ package com.awolity.secftp.view.settings
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.afollestad.materialdialogs.MaterialDialog
@@ -60,6 +61,11 @@ class SettingsActivity : AppCompatActivity() {
         bs_edit_known_hosts.setOnClickListener {
             // TODO
         }
+
+        ss_show_hidden_files.checked = getShowHiddenFiles(this)
+        ss_show_hidden_files.setOnCheckedChangedListener(CompoundButton.OnCheckedChangeListener { _, isChecked ->
+            setShowHiddenFiles(this@SettingsActivity, isChecked)
+        })
     }
 
     companion object {
