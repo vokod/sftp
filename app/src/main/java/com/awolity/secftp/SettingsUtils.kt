@@ -21,19 +21,10 @@ fun setOnlyTrustedServers(context: Context, setting: Boolean) {
     Yapel.get(YAPEL_KEY, context).setBoolean(KEY_ONLY_TRUSTED_SERVERS, setting)
 }
 
-fun getDefaultAuthenticationMethod(context: Context): Boolean {
-    return Yapel.get(YAPEL_KEY, context).getBoolean(KEY_DEFAULT_AUTH_METHOD, true)
-}
-
-fun setDefaultAuthenticationMethod(context: Context, setting: Boolean) {
-    Yapel.get(YAPEL_KEY, context).setBoolean(KEY_DEFAULT_AUTH_METHOD, setting)
-}
-
 fun isHostKnown(context: Context, hostname: String): Boolean {
-    if (!knownHostsFileExist(context)) {
-        return false
-    }
-    val matchingHosts = readKnownHostsFile(context).filter { it.startsWith(hostname) }
+    if (!knownHostsFileExist(context)) return false
+    val matchingHosts = readKnownHostsFile(File(context.filesDir, KNOWN_HOSTS_FILE_NAME))
+        .filter { it.startsWith(hostname) }
     return !matchingHosts.isEmpty()
 }
 
@@ -41,11 +32,11 @@ fun knownHostsFileExist(context: Context): Boolean {
     return File(context.filesDir, KNOWN_HOSTS_FILE_NAME).exists()
 }
 
-private fun readKnownHostsFile(context: Context): List<String> {
+private fun readKnownHostsFile(knownHostsFile: File): MutableList<String> {
     val result = mutableListOf<String>()
     val reader: BufferedReader
     try {
-        val inputStream = File(context.filesDir, KNOWN_HOSTS_FILE_NAME).inputStream()
+        val inputStream = knownHostsFile.inputStream()
         reader = BufferedReader(InputStreamReader(inputStream))
         var line = reader.readLine()
         while (line != null) {
@@ -56,6 +47,22 @@ private fun readKnownHostsFile(context: Context): List<String> {
         Log.e(TAG, "readKnownHostsFile - IOException: ${ioe.localizedMessage}")
     }
     return result
+}
+
+fun importKnownHostsFile(context: Context, newFile: File) {
+    if (knownHostsFileExist(context)) { //known hosts file exist, append new entries
+        val importedKnownHostsFile = File(context.filesDir, KNOWN_HOSTS_FILE_NAME)
+        val oldKnownHosts = readKnownHostsFile(importedKnownHostsFile)
+        val newKnownHosts = readKnownHostsFile(newFile)
+        newKnownHosts.forEach { newKnownHost ->
+            if (oldKnownHosts.none { it.startsWith(newKnownHost.substringBefore(' ')) }) {
+                oldKnownHosts.add(newKnownHost)
+            }
+        }
+        importedKnownHostsFile.writeText(oldKnownHosts.joinToString("\n"))
+    } else { // known hosts file does not exist, simply copy the new file
+        newFile.copyTo(File(context.filesDir, KNOWN_HOSTS_FILE_NAME))
+    }
 }
 
 const val TAG = "SettingsUtils"

@@ -8,9 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.files.fileChooser
 import com.awolity.secftp.*
+import com.awolity.settingviews.ButtonSetting
 import com.awolity.settingviews.RadiogroupSetting
 import kotlinx.android.synthetic.main.activity_settings.*
-import java.io.File
+import org.jetbrains.anko.toast
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -29,20 +30,15 @@ class SettingsActivity : AppCompatActivity() {
             }
         })
 
-        rs_default_auth_method.setSelectedRadioButton(if (getDefaultAuthenticationMethod(this)) 1 else 0)
-        rs_default_auth_method.setListener(object : RadiogroupSetting.RadiogroupSettingListener {
-            override fun OnRadioButtonClicked(selected: Int) {
-                setDefaultAuthenticationMethod(this@SettingsActivity, selected > 0)
-            }
-        })
-
-        bs_know_hosts_file.checked = knownHostsFileExist(this)
-        bs_know_hosts_file.setOnClickListener {
+        val bsKnow = findViewById<ButtonSetting>(R.id.bs_known_hosts_file) //valamiert nullnak l'tja a koltin android extension altal letrehozott referenciakat, de csak a materialdialog lambdajaban
+        bsKnow.checked = knownHostsFileExist(this)
+        bsKnow.setOnClickListener {
             MaterialDialog(this).show {
                 fileChooser { _, file ->
                     try {
-                        file.copyTo(File(filesDir, KNOWN_HOSTS_FILE_NAME), overwrite = true)
-                        if (!bs_know_hosts_file.checked) bs_know_hosts_file.check()
+                        importKnownHostsFile(this@SettingsActivity, file)
+                        if (!bsKnow.checked) bsKnow.check()
+                        else toast("Known hosts imported")
                     } catch (e: Exception) {
                         Toast.makeText(this@SettingsActivity, "Some error occurred", Toast.LENGTH_LONG).show()
                     }

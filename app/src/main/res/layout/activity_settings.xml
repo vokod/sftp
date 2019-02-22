@@ -33,7 +33,7 @@
             app:layout_constraintEnd_toEndOf="parent"/>
 
     <com.awolity.settingviews.ButtonSetting
-            android:id="@+id/bs_know_hosts_file"
+            android:id="@+id/bs_known_hosts_file"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -48,25 +48,4 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-    <com.awolity.settingviews.RadiogroupSetting
-            android:id="@+id/rs_default_auth_method"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:titleText="Default authentication method"
-            app:titleTextColor="@android:color/primary_text_light"
-            app:radioButtonLabelTextColor="@android:color/secondary_text_light"
-            app:firstRadioButtonText="Password"
-            app:secondRadioButtonText="Certificate"
-            app:selected="1"
-            app:iconDrawableResource="@drawable/ic_default_auth_method"
-            app:layout_constraintTop_toBottomOf="@+id/bs_know_hosts_file"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-    <View android:layout_width="match_parent" android:layout_height="2dp"
-          android:background="@color/grey"
-          app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintTop_toBottomOf="@id/rs_default_auth_method"
-          style="@style/SettingGroupDivider"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
