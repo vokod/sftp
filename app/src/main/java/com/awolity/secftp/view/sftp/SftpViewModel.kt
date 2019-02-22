@@ -8,8 +8,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.awolity.secftp.AppExecutors
 import com.awolity.secftp.SecftpApplication
+import com.awolity.secftp.getKnownHostsFile
+import com.awolity.secftp.getOnlyTrustedServers
 import com.awolity.secftp.model.SshConnectionDatabase
 import com.awolity.secftp.ssh.SftpClient
+import com.awolity.secftp.ssh.SftpClient.ConnectListener
 import net.schmizz.sshj.sftp.RemoteResourceInfo
 import java.io.File
 import java.io.IOException
@@ -23,7 +26,6 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
     private var _actualDir: MutableLiveData<String> = MutableLiveData()
     private var _isBusy: MutableLiveData<Boolean> = MutableLiveData()
     private val sftpClient: SftpClient
-    private var hostFile: File
     private val dirs = ArrayDeque<String>()
     private var _message: MutableLiveData<String> = MutableLiveData()
 
@@ -48,8 +50,7 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
     init {
         _isBusy.postValue(false)
         _files.value = ArrayList()
-        hostFile = File(application.filesDir, "known_hosts")
-        sftpClient = SftpClient()
+        sftpClient = SftpClient(application)
     }
 
     fun isOnline(): Boolean = sftpClient.isOnline()
@@ -57,29 +58,35 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
     fun connect(id: Long) {
         _isBusy.postValue(true)
         AppExecutors.getInstance().diskIO().execute {
-            val connection = SshConnectionDatabase.getInstance(getApplication<SecftpApplication>()).connectionDao()
+            val connectionData = SshConnectionDatabase.getInstance(getApplication<SecftpApplication>()).connectionDao()
                 .getByIdSync(id)
-            sftpClient.connect(hostFile, connection, object : SftpClient.ConnectListener {
-                override fun onConnected() {
-                    Log.d(TAG, "...onConnected")
-                    listDirectory("/", true)
-                }
-
-                override fun onVerifyError(e: Exception) {
-                    Log.d(SftpActivity.TAG, "...onVerifyError: " + e.localizedMessage)
-                    _isBusy.postValue(false)
-                }
-
-                override fun onConnectionError(e: Exception) {
-                    Log.d(SftpActivity.TAG, "...onConnectionError: " + e.localizedMessage)
-                    Log.d(SftpActivity.TAG, "...cause: " + e.cause)
-                    _isBusy.postValue(false)
-                }
-            })
+            if (getOnlyTrustedServers(getApplication())) {
+                sftpClient.connectToKnownHost(getKnownHostsFile(getApplication()), connectionData, connectListener)
+            } else {
+                sftpClient.connectToAnything(connectionData, connectListener)
+            }
         }
     }
 
-    fun disconnect() {
+    val connectListener = object : ConnectListener {
+        override fun onConnected() {
+            Log.d(TAG, "...onConnected")
+            listDirectory("/", true)
+        }
+
+        override fun onVerifyError(e: Exception) {
+            Log.d(SftpActivity.TAG, "...onVerifyError: " + e.localizedMessage)
+            _isBusy.postValue(false)
+        }
+
+        override fun onConnectionError(e: Exception) {
+            Log.d(SftpActivity.TAG, "...onConnectionError: " + e.localizedMessage)
+            Log.d(SftpActivity.TAG, "...cause: " + e.cause)
+            _isBusy.postValue(false)
+        }
+    }
+
+    private fun disconnect() {
         _isBusy.postValue(true)
         sftpClient.disconnect(object : SftpClient.DisconnectListener {
 

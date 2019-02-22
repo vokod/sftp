@@ -13,7 +13,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return SshConnectionDatabase.getInstance(getApplication<SecftpApplication>()).connectionDao().getAll()
     }
 
-    fun deleteConnection(id:Long){}
+    fun deleteConnection(id:Long){
+        //TODO
+    }
 
     companion object {
         private const val TAG = "MainViewModel"

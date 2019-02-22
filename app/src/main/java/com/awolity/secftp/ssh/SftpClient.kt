@@ -1,6 +1,8 @@
 package com.awolity.secftp.ssh
 
+import android.content.Context
 import android.util.Log
+import androidx.annotation.WorkerThread
 import com.awolity.secftp.AppExecutors
 import com.awolity.secftp.model.SshConnectionData
 import net.schmizz.sshj.SSHClient
@@ -12,55 +14,62 @@ import net.schmizz.sshj.xfer.FileSystemFile
 import java.io.File
 import java.io.IOException
 
-class SftpClient {
+class SftpClient(val context: Context) {
 
     private val client: SSHClient = SSHClient(AndroidConfig())
 
     fun isOnline() = client.isAuthenticated
 
-    fun connect(
-        hostfile: File, data: SshConnectionData,
-        listener: ConnectListener
-    ) {
-        Log.d(TAG, "connect() called with: hostfile = [$hostfile], data = [$data], listener = [$listener]")
+    fun connectToAnything(data: SshConnectionData, listener: ConnectListener) {
+        AppExecutors.getInstance().network().execute {
+            client.addHostKeyVerifier(NullHostKeyVerifier())
+            connect(data, listener)
+        }
+    }
+
+    fun connectToKnownHost(hostFile: File, data: SshConnectionData, listener: ConnectListener) {
         AppExecutors.getInstance().network().execute {
             try {
-                client.loadKnownHosts(hostfile)
+                client.loadKnownHosts(hostFile)
             } catch (e: IOException) {
                 listener.onVerifyError(e)
             }
+            connect(data, listener)
+        }
+    }
 
-            try {
-                Log.d(TAG, "Connect:")
-                client.connect(data.address, data.port)
-                Log.d(TAG, "...connected")
-                Log.d(TAG, "Authenticate:")
+    @WorkerThread
+    private fun connect(data: SshConnectionData, listener: ConnectListener) {
+        try {
+            Log.d(TAG, "Connect:")
+            client.connect(data.address, data.port)
+            Log.d(TAG, "...connected")
+            Log.d(TAG, "Authenticate:")
 
-                if (data.authMethod == 0) { // password
-                    client.authPassword(data.username, data.password)
-                    Log.d(TAG, "...authenticated with password")
-                } else { // certificate
-                    val keyProvider = client.loadKeys(data.privKeyFileName)
-                    client.authPublickey(data.username, keyProvider)
-                    Log.d(TAG, "...authenticated with key")
-                }
-                client.startSession()
-
-                listener.onConnected()
-            } catch (e: ConnectionException) {
-                listener.onConnectionError(SshException("SshConnectionData error", e))
-            } catch (e: TransportException) {
-                listener.onConnectionError(SshException("Transport exception error", e))
-                // on TransportException: [HOST_KEY_NOT_VERIFIABLE]
-            } catch (e: UserAuthException) {
-                listener.onConnectionError(SshException("User authentication error", e))
-                // on UserAuthException
-            } catch (e: IOException) {
-                // on Host unreachable
-                // on Network unreachable
-                // on ConnectException
-                listener.onConnectionError(SshException("IO exception error", e))
+            if (data.authMethod == 0) { // password
+                client.authPassword(data.username, data.password)
+                Log.d(TAG, "...authenticated with password")
+            } else { // certificate
+                val keyProvider = client.loadKeys(data.privKeyFileName)
+                client.authPublickey(data.username, keyProvider)
+                Log.d(TAG, "...authenticated with key")
             }
+            client.startSession()
+
+            listener.onConnected()
+        } catch (e: ConnectionException) {
+            listener.onConnectionError(SshException("SshConnectionData error", e))
+        } catch (e: TransportException) {
+            listener.onConnectionError(SshException("Transport exception error", e))
+            // on TransportException: [HOST_KEY_NOT_VERIFIABLE]
+        } catch (e: UserAuthException) {
+            listener.onConnectionError(SshException("User authentication error", e))
+            // on UserAuthException
+        } catch (e: IOException) {
+            // on Host unreachable
+            // on Network unreachable
+            // on ConnectException
+            listener.onConnectionError(SshException("IO exception error", e))
         }
     }
 

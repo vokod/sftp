@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            app:titleText="Known hosts file"
+            app:titleText="Import known hosts file"
             app:descriptionText="Import a file, with the certificate of the known servers. If you import it from a computer, it is usually stored in the user's .ssh directory, and named &quot;known_hosts&quot;"
             app:descriptionTextColor="@android:color/secondary_text_light"
             app:titleTextColor="@android:color/primary_text_light"
@@ -45,6 +45,21 @@
             app:checked="false"
             app:iconDrawableResource="@drawable/ic_import_known_hosts"
             app:layout_constraintTop_toBottomOf="@+id/rs_trusted_server"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
+    <com.awolity.settingviews.ButtonSetting
+            android:id="@+id/bs_edit_known_hosts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:titleText="Edit known hosts"
+            app:descriptionText="Edit the known hosts from the previously imported known_hosts files"
+            app:descriptionTextColor="@android:color/secondary_text_light"
+            app:titleTextColor="@android:color/primary_text_light"
+            app:iconDrawableResource="@drawable/ic_edit_black_24dp"
+            app:layout_constraintTop_toBottomOf="@+id/bs_known_hosts_file"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 

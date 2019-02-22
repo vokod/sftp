@@ -27,8 +27,19 @@ class SettingsActivity : AppCompatActivity() {
         rs_trusted_server.setListener(object : RadiogroupSetting.RadiogroupSettingListener {
             override fun OnRadioButtonClicked(selected: Int) {
                 setOnlyTrustedServers(this@SettingsActivity, selected > 0)
+                if (selected > 0) {
+                    bs_known_hosts_file.isEnabled = true
+                    bs_edit_known_hosts.isEnabled = true
+                } else {
+                    bs_known_hosts_file.isEnabled = false
+                    bs_edit_known_hosts.isEnabled = false
+                }
             }
         })
+
+        val onlyTrustedServers = getOnlyTrustedServers(this)
+        bs_known_hosts_file.isEnabled = onlyTrustedServers
+        bs_edit_known_hosts.isEnabled = onlyTrustedServers
 
         val bsKnow = findViewById<ButtonSetting>(R.id.bs_known_hosts_file) //valamiert nullnak l'tja a koltin android extension altal letrehozott referenciakat, de csak a materialdialog lambdajaban
         bsKnow.checked = knownHostsFileExist(this)
@@ -44,6 +55,10 @@ class SettingsActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+
+        bs_edit_known_hosts.setOnClickListener {
+            // TODO
         }
     }
 

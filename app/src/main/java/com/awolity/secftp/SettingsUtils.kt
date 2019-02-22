@@ -8,10 +8,8 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
 
-
 const val YAPEL_KEY = "YAPEL_KEY"
 const val KEY_ONLY_TRUSTED_SERVERS = "trusted server setting"
-const val KEY_DEFAULT_AUTH_METHOD = "default auth method"
 
 fun getOnlyTrustedServers(context: Context): Boolean {
     return Yapel.get(YAPEL_KEY, context).getBoolean(KEY_ONLY_TRUSTED_SERVERS, true)
@@ -30,6 +28,10 @@ fun isHostKnown(context: Context, hostname: String): Boolean {
 
 fun knownHostsFileExist(context: Context): Boolean {
     return File(context.filesDir, KNOWN_HOSTS_FILE_NAME).exists()
+}
+
+fun getKnownHostsFile(context: Context): File {
+    return File(context.filesDir, KNOWN_HOSTS_FILE_NAME)
 }
 
 private fun readKnownHostsFile(knownHostsFile: File): MutableList<String> {

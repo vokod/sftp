@@ -62,9 +62,9 @@ class MainActivity : AppCompatActivity(), SshConnectionAdapter.SshConnectionList
         } else {
             MaterialDialog(this).show {
                 title(text = "Host not trusted")
-                message(text = "The specified host is not on the list of known hosts. Either import the host`s public key, or turn off Trusted servers setting")
+                message(text = "The specified host is not on the list of known hosts. Either import the host`s public key, or turn off Trusted servers in settings")
                 positiveButton { dismiss() }
-                negativeButton(text = "Go toSettings") {
+                negativeButton(text = "Go to Settings") {
                     startActivity(SettingsActivity.getNewIntent(this@MainActivity))
                 }
             }

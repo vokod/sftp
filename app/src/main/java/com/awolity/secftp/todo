@@ -1,9 +1,10 @@
-// TODO: bug a known host importnal
+
 // TODO: important: ha nincs known_hosts, akkor automatikusan legyen promiszkus
 // TODO: important: sshConnectionData activitynel a billentyuzet kitakarja a tartalmat
 // TODO: important: kilépés előtt kérdezzen rá
+// TODO: nice to have: hide hidden files
 // TODO: zavarnak a fekete szovegek
-// TODO: nice to have host filet ne csak cserelni lehessen hanem beilleszteni, kivenni belole
 // TODO: nice to have: sshConnectionData editnel a regi key fajlokat torolni kellene
 // TODO: nice to have: titkositani a db-ben a jelszavakat (yavel)
 // TODO: nice to have: titkositani a kulcs es known_host file-t, mint value-t es berakni a db-be/sp-be
+// TODO: nice to have: edit known hosts
