@@ -1,4 +1,4 @@
-
+// TODO: bug a known host importnal
 // TODO: important: ha nincs known_hosts, akkor automatikusan legyen promiszkus
 // TODO: important: sshConnectionData activitynel a billentyuzet kitakarja a tartalmat
 // TODO: important: kilépés előtt kérdezzen rá

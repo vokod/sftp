@@ -11,7 +11,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.afollestad.materialdialogs.MaterialDialog
 import com.awolity.secftp.R
+import com.awolity.secftp.getOnlyTrustedServers
+import com.awolity.secftp.isHostKnown
 import com.awolity.secftp.model.SshConnectionData
 import com.awolity.secftp.view.connection.ConnectionDetailsActivity
 import com.awolity.secftp.view.settings.SettingsActivity
@@ -53,7 +56,19 @@ class MainActivity : AppCompatActivity(), SshConnectionAdapter.SshConnectionList
     }
 
     override fun onItemClicked(item: SshConnectionData) {
-        startActivity(SftpActivity.getNewIntent(this, item.id, item.name))
+        // if trusted servers required, than only start activity if host is known
+        if (!getOnlyTrustedServers(this) || isHostKnown(this, item.address)) {
+            startActivity(SftpActivity.getNewIntent(this, item.id, item.name))
+        } else {
+            MaterialDialog(this).show {
+                title(text = "Host not trusted")
+                message(text = "The specified host is not on the list of known hosts. Either import the host`s public key, or turn off Trusted servers setting")
+                positiveButton { dismiss() }
+                negativeButton(text = "Go toSettings") {
+                    startActivity(SettingsActivity.getNewIntent(this@MainActivity))
+                }
+            }
+        }
     }
 
     override fun onLongClicked(item: SshConnectionData) {

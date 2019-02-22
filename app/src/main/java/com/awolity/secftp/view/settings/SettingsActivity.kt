@@ -9,7 +9,6 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.files.fileChooser
 import com.awolity.secftp.*
 import com.awolity.settingviews.RadiogroupSetting
-import kotlinx.android.synthetic.main.activity_connection.*
 import kotlinx.android.synthetic.main.activity_settings.*
 import java.io.File
 
@@ -37,17 +36,15 @@ class SettingsActivity : AppCompatActivity() {
             }
         })
 
-        bs_know_hosts_file.checked = File(filesDir, KNOWN_HOSTS_FILE_NAME).exists()
+        bs_know_hosts_file.checked = knownHostsFileExist(this)
         bs_know_hosts_file.setOnClickListener {
-            bs_pub_key.setOnClickListener {
-                MaterialDialog(this).show {
-                    fileChooser { _, file ->
-                        try {
-                            file.copyTo(File(filesDir, KNOWN_HOSTS_FILE_NAME), overwrite = true)
-                            if (!bs_know_hosts_file.checked) bs_know_hosts_file.check()
-                        } catch (e: Exception) {
-                            Toast.makeText(this@SettingsActivity, "Some error occurred", Toast.LENGTH_LONG).show()
-                        }
+            MaterialDialog(this).show {
+                fileChooser { _, file ->
+                    try {
+                        file.copyTo(File(filesDir, KNOWN_HOSTS_FILE_NAME), overwrite = true)
+                        if (!bs_know_hosts_file.checked) bs_know_hosts_file.check()
+                    } catch (e: Exception) {
+                        Toast.makeText(this@SettingsActivity, "Some error occurred", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -55,7 +52,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val KNOWN_HOSTS_FILE_NAME = "known_hosts"
 
         fun getNewIntent(context: Context): Intent {
             return Intent(context, SettingsActivity::class.java)

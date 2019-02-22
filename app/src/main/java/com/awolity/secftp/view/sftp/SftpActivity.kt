@@ -21,7 +21,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.files.fileChooser
 import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.list.listItemsSingleChoice
-import com.awolity.secftp.Constants
+import com.awolity.secftp.ANIMATION_DURATION
 import com.awolity.secftp.R
 import kotlinx.android.synthetic.main.activity_sftp.*
 import net.schmizz.sshj.sftp.RemoteResourceInfo
@@ -53,7 +53,6 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
         if (item.isRegularFile) {
             val popup = PopupMenu(this@SftpActivity, itemView)
             popup.menuInflater.inflate(R.menu.menu_sftp_popup, popup.menu)
-
             popup.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.menu_item_download -> {
@@ -169,7 +168,7 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
             .scaleY(1f)
             .scaleX(1f)
             .setInterpolator(DecelerateInterpolator(1.4f))
-            .duration = Constants.ANIMATION_DURATION
+            .duration = ANIMATION_DURATION
     }
 
     private fun stopProgress() {
@@ -192,7 +191,7 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
 
                 }
             })
-            .duration = Constants.ANIMATION_DURATION
+            .duration = ANIMATION_DURATION
     }
 
     companion object {
