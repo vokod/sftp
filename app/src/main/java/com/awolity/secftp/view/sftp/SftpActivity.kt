@@ -144,17 +144,10 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
     private fun setupObservers() {
         sftpViewModel.connectionState.observe(this, androidx.lifecycle.Observer {
             when (it) {
-                ConnectionState.DISCONNECTED -> {
-                    stopProgress()
-                }
-                ConnectionState.CONNECTED -> {
-                    stopProgress()
-                }
-                ConnectionState.BUSY -> {
-                    startProgress()
-                }
-                null -> {
-                }
+                ConnectionState.DISCONNECTED -> { stopProgress() }
+                ConnectionState.CONNECTED -> { stopProgress() }
+                ConnectionState.BUSY -> { startProgress() }
+                null -> { }
             }
         })
 

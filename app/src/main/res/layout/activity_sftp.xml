@@ -41,19 +41,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <ProgressBar
-            android:id="@+id/pb"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:visibility="invisible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
-            android:layout_marginTop="16dp"/>
-
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_remote"
             android:layout_width="0dp"
@@ -63,8 +50,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
-            tools:listitem="@layout/item_incoming"/>
+            tools:listitem="@layout/item_remote_file">
+    </androidx.recyclerview.widget.RecyclerView>
 
+    <ProgressBar
+            android:id="@+id/pb"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+            app:layout_constraintBottom_toBottomOf="@+id/rv_remote"/>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

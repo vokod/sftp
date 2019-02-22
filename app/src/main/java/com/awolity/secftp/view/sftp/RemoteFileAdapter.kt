@@ -53,7 +53,7 @@ class RemoteFileAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RemoteFileAdapter.RemoteFileItemViewHolder {
-        val v = inflater.inflate(R.layout.item_incoming, parent, false)
+        val v = inflater.inflate(R.layout.item_remote_file, parent, false)
         return RemoteFileItemViewHolder(v, remoteFileListener)
     }
 
