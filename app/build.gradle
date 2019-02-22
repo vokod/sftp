@@ -58,7 +58,7 @@ dependencies {
     implementation 'com.afollestad.material-dialogs:files:2.0.0'
 
     //setting views
-    implementation 'com.github.vokod:SettingViews:-SNAPSHOT'
+    implementation 'com.github.vokod:SettingViews:08fcf4c280'
 
     // yapel
     implementation 'com.github.vokod:yapel:0.1'

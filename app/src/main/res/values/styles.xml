@@ -11,6 +11,11 @@
         <item name="android:windowTranslucentStatus">false</item>
     </style>
 
+    <style name="SecftpAppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light"/>
+
+    <style name="SecftpAppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
+
+
     <style name="SecftpAppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

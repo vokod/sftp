@@ -9,7 +9,7 @@ import com.awolity.secftp.AppExecutors
 import com.awolity.secftp.ConnectionState
 import com.awolity.secftp.SecftpApplication
 import com.awolity.secftp.model.SshConnectionDatabase
-import com.awolity.secftp.ssh.SftpOperations
+import com.awolity.secftp.ssh.SftpClient
 import net.schmizz.sshj.SSHClient
 import net.schmizz.sshj.sftp.RemoteResourceInfo
 import java.io.File
@@ -23,7 +23,7 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
     private var _files: MutableLiveData<List<RemoteResourceInfo>> = MutableLiveData()
     private var _actualDir: MutableLiveData<String> = MutableLiveData()
     private var _connectionState: MutableLiveData<ConnectionState> = MutableLiveData()
-    private var client: SSHClient? = null
+    private val sftpClient: SftpClient
     private var hostFile: File
     private val dirs = ArrayDeque<String>()
 
@@ -45,6 +45,7 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         _connectionState.postValue(ConnectionState.DISCONNECTED)
         _files.value = ArrayList()
         hostFile = File(application.filesDir, "known_hosts")
+        sftpClient = SftpClient()
     }
 
     fun connect(id: Long) {
@@ -52,9 +53,8 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         AppExecutors.getInstance().diskIO().execute {
             val connection = SshConnectionDatabase.getInstance(getApplication<SecftpApplication>()).connectionDao()
                 .getByIdSync(id)
-            SftpOperations.connect(hostFile, connection, object : SftpOperations.ConnectListener {
-                override fun onConnected(client: SSHClient) {
-                    this@SftpViewModel.client = client
+            sftpClient.connect(hostFile, connection, object : SftpClient.ConnectListener {
+                override fun onConnected() {
                     Log.d(TAG, "...onConnected")
                     listDirectory("/", true)
                 }
@@ -74,21 +74,23 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun disconnect() {
-        SftpOperations.disconnect(client, object : SftpOperations.DisconnectListener {
+        sftpClient.disconnect(object : SftpClient.DisconnectListener {
+
             override fun onDisconnected() {
                 Log.d(SftpActivity.TAG, "...onDisconnected")
             }
 
-            override fun onError(e: java.lang.Exception?) {
+            override fun onError(e: Exception) {
                 Log.d(SftpActivity.TAG, "...onError: " + e?.localizedMessage)
                 // TODO: message
             }
+
         })
     }
 
     fun upload(file: File) {
         _connectionState.postValue(ConnectionState.BUSY)
-        SftpOperations.uploadFile(client, file, _actualDir.value, object : SftpOperations.UploadListener {
+        sftpClient.uploadFile(file, _actualDir.value!!, object : SftpClient.UploadListener {
             override fun onFileUploaded(result: String) {
                 Log.d(TAG, "...onFileUploaded: $result")
                 listDirectory(_actualDir.value!!, false)
@@ -104,9 +106,9 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
 
     fun download(item: RemoteResourceInfo) {
         _connectionState.postValue(ConnectionState.BUSY)
-        SftpOperations.downloadFile(client, item,
+        sftpClient.downloadFile(item,
             getApplication<Application>().filesDir,
-            object : SftpOperations.DownloadListener {
+            object : SftpClient.DownloadListener {
                 override fun onFileDownloaded(file: File) {
                     Log.d(TAG, "onFileDownloaded - " + file.name)
                     _connectionState.postValue(ConnectionState.CONNECTED)
@@ -123,8 +125,8 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
 
     fun delete(item: RemoteResourceInfo) {
         _connectionState.postValue(ConnectionState.BUSY)
-        SftpOperations.deleteFile(client, item, object : SftpOperations.DeleteListener {
-            override fun onFileDeleted(name: String?) {
+        sftpClient.deleteFile(item, object : SftpClient.DeleteListener {
+            override fun onFileDeleted(name: String) {
                 Log.d(TAG, "onFileDeleted - $name")
                 listDirectory(_actualDir.value!!, false)
                 // TODO: message
@@ -145,22 +147,22 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         if (_connectionState.value != ConnectionState.BUSY) {
             _connectionState.postValue(ConnectionState.BUSY)
         }
-        client.let {
-            SftpOperations.listDirectory(client, path, object : SftpOperations.ListDirectoryListener {
-                override fun onDirectoryListed(remoteFiles: MutableList<RemoteResourceInfo>) {
-                    Log.d(TAG, "...onDirectoryListed: \n")
-                    sort(remoteFiles)
-                    _actualDir.postValue(path)
-                    _connectionState.postValue(ConnectionState.CONNECTED)
-                }
 
-                override fun onError(e: Exception?) {
-                    Log.d(TAG, "...onError: " + e?.localizedMessage)
-                    Log.d(TAG, "...cause: " + e?.cause)
-                    // TODO: _connectionState?
-                }
-            })
-        }
+        sftpClient.listDirectory(path, object : SftpClient.ListDirectoryListener {
+            override fun onDirectoryListed(remoteFiles: List<RemoteResourceInfo>) {
+                Log.d(TAG, "...onDirectoryListed: \n")
+                sort(remoteFiles)
+                _actualDir.postValue(path)
+                _connectionState.postValue(ConnectionState.CONNECTED)
+            }
+
+            override fun onError(e: Exception) {
+                Log.d(TAG, "...onError: " + e?.localizedMessage)
+                Log.d(TAG, "...cause: " + e?.cause)
+                // TODO: _connectionState?
+            }
+        })
+
     }
 
     fun sort() {
