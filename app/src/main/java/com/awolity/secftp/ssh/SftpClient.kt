@@ -107,13 +107,12 @@ class SftpClient(val context: Context) {
                 listener.onError(SshException("Client not authenticated", null))
             } else {
                 try {
-                    client.newSFTPClient().use { sftp -> sftp.get(remoteFile.name, FileSystemFile(inFile)) }
+                    client.newSFTPClient().use { sftp -> sftp.get(remoteFile.path, FileSystemFile(inFile)) }
+                    listener.onFileDownloaded(inFile)
                 } catch (e: IOException) {
                     listener.onError(SshException("IO exception error", e))
                 }
-
             }
-            listener.onFileDownloaded(inFile)
         })
     }
 
