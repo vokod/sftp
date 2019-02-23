@@ -24,10 +24,9 @@
             android:layout_height="wrap_content"
             tools:text="Connection Name" android:textAppearance="@android:style/TextAppearance.Material.Title"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="8dp" android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/iv_delete_item_incoming"
+            android:layout_marginTop="8dp"
             app:layout_constraintStart_toEndOf="@+id/iv_initial" android:layout_marginStart="16dp"
-            app:layout_constraintHorizontal_bias="0.5"/>
+    />
 
     <TextView
             android:id="@+id/tv_address"
@@ -38,8 +37,8 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_name"
             app:layout_constraintStart_toEndOf="@+id/iv_initial"
             tools:text="address: server.valahol.com" android:ellipsize="end"
-            android:maxLines="1" android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/iv_delete_item_incoming"/>
+            android:maxLines="1"
+    />
 
     <TextView
             android:id="@+id/tv_username"
@@ -65,17 +64,6 @@
             tools:text="auth type: certificate" android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent" android:ellipsize="end"
             app:layout_constraintHorizontal_bias="0.5" android:maxLines="1"/>
-
-    <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            app:srcCompat="@drawable/ic_delete_black_24dp"
-            android:id="@+id/iv_delete_item_incoming"
-            android:tint="@color/grey"
-            tools:ignore="ContentDescription"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="16dp" android:layout_marginEnd="16dp"
-            app:layout_constraintStart_toEndOf="@+id/tv_name" app:layout_constraintHorizontal_bias="0.5"/>
 
     <FrameLayout android:id="@+id/fl_click_overlay"
                  android:background="?attr/selectableItemBackground"

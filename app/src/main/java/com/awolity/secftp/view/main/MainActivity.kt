@@ -6,7 +6,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -71,13 +73,31 @@ class MainActivity : AppCompatActivity(), SshConnectionAdapter.SshConnectionList
         }
     }
 
-    override fun onLongClicked(item: SshConnectionData) {
-        startActivity(ConnectionDetailsActivity.getNewIntent(this, item.id))
-    }
-
-    override fun onDeleteClicked(item: SshConnectionData) {
-        // TODO: rakerdezni
-        vm.deleteConnection(item.id)
+    override fun onLongClicked(item: SshConnectionData, itemView: View) {
+       // startActivity(ConnectionDetailsActivity.getNewIntent(this, item.id))
+        val popup = PopupMenu(this@MainActivity, itemView)
+        popup.menuInflater.inflate(R.menu.menu_main_popup, popup.menu)
+        popup.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.menu_item_edit -> {
+                    startActivity(ConnectionDetailsActivity.getNewIntent(this, item.id))
+                    true
+                }
+                R.id.menu_item_delete -> {
+                    MaterialDialog(this@MainActivity).show {
+                        title(text = "Delete")
+                        message(text = "Do you really want to delete the connection ${item.name}?")
+                        positiveButton { vm.deleteConnection(item.id) }
+                        negativeButton { dismiss() }
+                    }
+                    true
+                }
+                else -> {
+                    false
+                }
+            }
+        }
+        popup.show()
     }
 
     private fun setupWidgets() {

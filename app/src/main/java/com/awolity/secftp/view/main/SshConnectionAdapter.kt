@@ -25,9 +25,7 @@ class SshConnectionAdapter(private val inflater: LayoutInflater,
     interface SshConnectionListener {
         fun onItemClicked(item: SshConnectionData)
 
-        fun onDeleteClicked(item: SshConnectionData)
-
-        fun onLongClicked(item: SshConnectionData)
+        fun onLongClicked(item: SshConnectionData, itemView: View)
     }
 
     fun updateItems(newItems: List<SshConnectionData>?) {
@@ -76,16 +74,14 @@ class SshConnectionAdapter(private val inflater: LayoutInflater,
         private val usernameTextView: TextView = itemView.findViewById(R.id.tv_username)
         private val authTypeTextView: TextView = itemView.findViewById(R.id.tv_auth)
         private val clickOverlay: FrameLayout = itemView.findViewById(R.id.fl_click_overlay)
-        private val deleteImageView: ImageView = itemView.findViewById(R.id.iv_delete_item_incoming)
         private val initialImageView: ImageView = itemView.findViewById(R.id.iv_initial)
 
         fun bind(item: SshConnectionData) {
             clickOverlay.setOnClickListener { listener.onItemClicked(item) }
             clickOverlay.setOnLongClickListener {
-                listener.onLongClicked(item)
+                listener.onLongClicked(item, itemView)
                 true
             }
-            deleteImageView.setOnClickListener { listener.onDeleteClicked(item) }
 
             nameTextView.text = item.name
             addressTextView.text = "Address: ${item.address}:${item.port}"

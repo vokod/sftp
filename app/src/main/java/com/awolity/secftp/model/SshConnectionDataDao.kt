@@ -26,4 +26,7 @@ interface SshConnectionDataDao {
 
     @Query("DELETE FROM connection_table")
     fun deleteAll()
+
+    @Query("DELETE FROM connection_table WHERE id = :id")
+    fun delete(id:Long):Int
 }
