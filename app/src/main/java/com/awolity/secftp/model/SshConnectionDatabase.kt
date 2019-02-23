@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [SshConnectionData::class], version = 1, exportSchema = false)
+@Database(entities = [SshConnectionData::class], version = 2, exportSchema = false)
 abstract class SshConnectionDatabase : RoomDatabase() {
 
     abstract fun connectionDao(): SshConnectionDataDao
@@ -22,6 +22,7 @@ abstract class SshConnectionDatabase : RoomDatabase() {
 
         private fun buildDatabase(context: Context): SshConnectionDatabase {
             return Room.databaseBuilder(context, SshConnectionDatabase::class.java, "connection.db")
+                .fallbackToDestructiveMigration()
                 .build()
         }
     }

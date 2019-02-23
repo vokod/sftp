@@ -12,7 +12,6 @@ data class SshConnectionData(
     @ColumnInfo(name = "username") var username: String,
     @ColumnInfo(name = "port") var port: Int,
     @ColumnInfo(name = "auth_method") var authMethod: Int,
-    @ColumnInfo(name = "pub_key_file") var pubKeyFileName: String,
     @ColumnInfo(name = "priv_key_file") var privKeyFileName: String,
     @ColumnInfo(name = "password") var password: String
 )

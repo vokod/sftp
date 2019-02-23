@@ -123,12 +123,12 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.awolity.settingviews.ButtonSetting
-                android:id="@+id/bs_pub_key"
+                android:id="@+id/bs_priv_key"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                app:titleText="Public key"
-                app:descriptionText="Import a public key file for the user."
+                app:titleText="Private key"
+                app:descriptionText="Import a private key file for the user. To be able to connect to the host, the corresponding public key must be known to the host"
                 app:descriptionTextColor="@android:color/secondary_text_light"
                 app:titleTextColor="@android:color/primary_text_light"
                 app:isCheckable="true"
@@ -138,20 +138,5 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-        <com.awolity.settingviews.ButtonSetting
-                android:id="@+id/bs_priv_key"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:titleText="Private key"
-                app:descriptionText="Import a private key file for the user."
-                app:descriptionTextColor="@android:color/secondary_text_light"
-                app:titleTextColor="@android:color/primary_text_light"
-                app:isCheckable="true"
-                app:checked="false"
-                app:iconDrawableResource="@drawable/ic_private_key"
-                app:layout_constraintTop_toBottomOf="@+id/bs_pub_key"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

@@ -16,12 +16,11 @@ import java.util.*
 
 class ConnectionDetailsViewModel(application: Application) : AndroidViewModel(application) {
 
-
     var id: Long = 0L
     private var db: SshConnectionDatabase = SshConnectionDatabase.getInstance(application)
     private val _finish = MutableLiveData<Boolean>()
     private val _message = MutableLiveData<String>()
-    private lateinit var context: Context
+    private var context: Context
     val finish: LiveData<Boolean>
         get() {
             return _finish
@@ -58,26 +57,22 @@ class ConnectionDetailsViewModel(application: Application) : AndroidViewModel(ap
                 return false
             }
         } else { // key auth
-            if (sshConnectionData.pubKeyFileName.isEmpty()) {
-                _message.value = "Import public key file."
-                return false
-            }
-            if (sshConnectionData.pubKeyFileName.isEmpty()) {
-                _message.value = "Import public key file."
+            if (sshConnectionData.privKeyFileName.isEmpty()) {
+                _message.value = "Import private key file."
                 return false
             }
         }
         return true
     }
 
-    fun importFile(file: File, listener: (File) -> Unit) {
+    fun importPrivKeyFile(file: File, listener: (File) -> Unit) {
         AppExecutors.getInstance().diskIO().execute {
             val savedFileName = keyFilePrefix + file.name
             val savedFile = saveFile(file, savedFileName)
             if (savedFile != null) {
                 listener(savedFile)
             } else {
-                _message.postValue("Error while saving public key file")
+                _message.postValue("Error while saving private key file")
             }
         }
     }

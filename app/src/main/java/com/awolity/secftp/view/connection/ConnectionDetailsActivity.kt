@@ -20,7 +20,6 @@ import java.io.File
 class ConnectionDetailsActivity : AppCompatActivity() {
 
     private lateinit var vm: ConnectionDetailsViewModel
-    private var pubKeyFile: String = ""
     private var privKeyFile: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +45,6 @@ class ConnectionDetailsActivity : AppCompatActivity() {
                     tiet_username.text.toString(),
                     tiet_port.text.toString().toInt(),
                     rs_auth_type.getSelectedRadioButton(),
-                    pubKeyFile,
                     privKeyFile,
                     tiet_password.text.toString()
                 )
@@ -63,28 +61,18 @@ class ConnectionDetailsActivity : AppCompatActivity() {
             override fun OnRadioButtonClicked(selected: Int) {
                 if (selected == 0) { // password
                     bs_priv_key.isEnabled = false
-                    bs_pub_key.isEnabled = false
                     tiet_password.isEnabled = true
                 } else { //key
                     bs_priv_key.isEnabled = true
-                    bs_pub_key.isEnabled = true
                     tiet_password.isEnabled = false
                 }
             }
         })
 
-        bs_pub_key.setOnClickListener {
-            MaterialDialog(this).show {
-                fileChooser { _, file ->
-                    vm.importFile(file) { pubKeyFile = it.name }
-                }
-            }
-        }
-
         bs_priv_key.setOnClickListener {
             MaterialDialog(this).show {
                 fileChooser { _, file ->
-                    vm.importFile(file) { privKeyFile = it.name }
+                    vm.importPrivKeyFile(file) { privKeyFile = it.name }
                 }
             }
         }
@@ -108,11 +96,9 @@ class ConnectionDetailsActivity : AppCompatActivity() {
                     tiet_password.setText(it.password)
                     rs_auth_type.setSelectedRadioButton(it.authMethod)
                     if (it.authMethod == 0) {
-                        bs_pub_key.isEnabled = false
                         bs_priv_key.isEnabled = false
                         tiet_password.isEnabled = true
                     } else {
-                        bs_pub_key.isEnabled = true
                         bs_priv_key.isEnabled = true
                         tiet_password.isEnabled = false
                     }
@@ -123,14 +109,6 @@ class ConnectionDetailsActivity : AppCompatActivity() {
                             privKeyFile = it.privKeyFileName
                         }
                         else -> bs_priv_key.checked = false
-                    }
-                    when {
-                        it.pubKeyFileName.isEmpty() -> bs_pub_key.checked = false
-                        File(filesDir, it.pubKeyFileName).exists() -> {
-                            bs_pub_key.checked = true
-                            pubKeyFile = it.pubKeyFileName
-                        }
-                        else -> bs_pub_key.checked = false
                     }
                 })
             }
