@@ -3,7 +3,7 @@ package com.awolity.secftp.ssh
 import android.content.Context
 import android.util.Log
 import androidx.annotation.WorkerThread
-import com.awolity.secftp.AppExecutors
+import com.awolity.secftp.utils.AppExecutors
 import com.awolity.secftp.model.SshConnectionData
 import net.schmizz.sshj.SSHClient
 import net.schmizz.sshj.connection.ConnectionException

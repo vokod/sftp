@@ -1,4 +1,4 @@
-package com.awolity.secftp
+package com.awolity.secftp.utils
 
 import android.content.Context
 import com.awolity.yapel.Yapel

@@ -1,4 +1,4 @@
-package com.awolity.secftp;
+package com.awolity.secftp.utils;
 
 import android.os.Handler;
 import android.os.Looper;

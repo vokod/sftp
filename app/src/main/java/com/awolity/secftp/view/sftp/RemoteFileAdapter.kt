@@ -9,9 +9,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.awolity.secftp.R
-import com.awolity.secftp.epochToDateTime
-import com.awolity.secftp.getInitial
-import com.awolity.secftp.humanReadableByteCount
+import com.awolity.secftp.utils.epochToDateTime
+import com.awolity.secftp.utils.getInitial
+import com.awolity.secftp.utils.humanReadableByteCount
 import net.schmizz.sshj.sftp.RemoteResourceInfo
 import java.util.*
 

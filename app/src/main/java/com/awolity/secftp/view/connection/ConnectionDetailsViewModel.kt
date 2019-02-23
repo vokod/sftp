@@ -2,14 +2,15 @@ package com.awolity.secftp.view.connection
 
 import android.app.Application
 import android.content.Context
-import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.awolity.secftp.AppExecutors
 import com.awolity.secftp.model.SshConnectionData
 import com.awolity.secftp.model.SshConnectionDatabase
+import com.awolity.secftp.utils.AppExecutors
+import com.awolity.secftp.utils.deleteFileIfExist
+import com.awolity.secftp.utils.saveFile
 import org.apache.commons.validator.routines.InetAddressValidator
 import java.io.File
 import java.util.*
@@ -65,10 +66,11 @@ class ConnectionDetailsViewModel(application: Application) : AndroidViewModel(ap
         return true
     }
 
-    fun importPrivKeyFile(file: File, listener: (File) -> Unit) {
+    fun importPrivKeyFile(file: File, oldFileName: String, listener: (File) -> Unit) {
         AppExecutors.getInstance().diskIO().execute {
+            deleteFileIfExist(context, oldFileName)
             val savedFileName = keyFilePrefix + file.name
-            val savedFile = saveFile(file, savedFileName)
+            val savedFile = saveFile(context, file, savedFileName)
             if (savedFile != null) {
                 AppExecutors.getInstance().mainThread().execute { listener(savedFile) }
             } else {
@@ -83,18 +85,6 @@ class ConnectionDetailsViewModel(application: Application) : AndroidViewModel(ap
                 db.connectionDao().update(sshConnectionData)
             }
             _finish.postValue(true)
-        }
-    }
-
-    private fun saveFile(file: File, newName: String): File? {
-        var resultFile: File? = null
-        try {
-            val filesDir = context.filesDir
-            resultFile = file.copyTo(File(filesDir, newName), overwrite = true)
-        } catch (e: Exception) {
-            Log.e(TAG, "saveFile - exception: $e")
-        } finally {
-            return resultFile
         }
     }
 

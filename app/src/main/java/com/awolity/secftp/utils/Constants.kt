@@ -1,4 +1,4 @@
-package com.awolity.secftp
+package com.awolity.secftp.utils
 
 
 const val ANIMATION_DURATION: Long = 500

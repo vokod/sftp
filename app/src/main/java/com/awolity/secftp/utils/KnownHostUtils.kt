@@ -1,4 +1,4 @@
-package com.awolity.secftp
+package com.awolity.secftp.utils
 
 import android.content.Context
 import android.util.Log
@@ -9,7 +9,12 @@ import java.io.InputStreamReader
 
 fun isHostKnown(context: Context, hostname: String): Boolean {
     if (!knownHostsFileExist(context)) return false
-    val matchingHosts = readKnownHostsFile(File(context.filesDir, KNOWN_HOSTS_FILE_NAME))
+    val matchingHosts = readKnownHostsFile(
+        File(
+            context.filesDir,
+            KNOWN_HOSTS_FILE_NAME
+        )
+    )
         .filter { it.startsWith(hostname) }
     return !matchingHosts.isEmpty()
 }
@@ -55,4 +60,4 @@ fun importKnownHostsFile(context: Context, newFile: File) {
     }
 }
 
-const val TAG = "KnownHostUtils"
+private const val TAG = "KnownHostUtils"

@@ -21,7 +21,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.files.fileChooser
 import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.list.listItemsSingleChoice
-import com.awolity.secftp.ANIMATION_DURATION
+import com.awolity.secftp.utils.ANIMATION_DURATION
 import com.awolity.secftp.R
 import kotlinx.android.synthetic.main.activity_sftp.*
 import net.schmizz.sshj.sftp.RemoteResourceInfo

@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.files.fileChooser
 import com.awolity.secftp.*
+import com.awolity.secftp.utils.*
 import com.awolity.settingviews.ButtonSetting
 import com.awolity.settingviews.RadiogroupSetting
 import kotlinx.android.synthetic.main.activity_settings.*

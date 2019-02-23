@@ -12,7 +12,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.files.fileChooser
-import com.awolity.secftp.AppExecutors
 import com.awolity.secftp.R
 import com.awolity.secftp.model.SshConnectionData
 import com.awolity.settingviews.ButtonSetting
@@ -82,7 +81,7 @@ class ConnectionDetailsActivity : AppCompatActivity() {
             MaterialDialog(this).show {
                 bsPrivateKey.checked = false
                 fileChooser { _, file ->
-                    vm.importPrivKeyFile(file) {
+                    vm.importPrivKeyFile(file, privKeyFile) {
                         privKeyFile = it.name
                         bsPrivateKey.check()
                     }

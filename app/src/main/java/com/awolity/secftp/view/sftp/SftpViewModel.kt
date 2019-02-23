@@ -10,6 +10,10 @@ import com.awolity.secftp.*
 import com.awolity.secftp.model.SshConnectionDatabase
 import com.awolity.secftp.ssh.SftpClient
 import com.awolity.secftp.ssh.SftpClient.ConnectListener
+import com.awolity.secftp.utils.AppExecutors
+import com.awolity.secftp.utils.getKnownHostsFile
+import com.awolity.secftp.utils.getOnlyTrustedServers
+import com.awolity.secftp.utils.getShowHiddenFiles
 import net.schmizz.sshj.sftp.RemoteResourceInfo
 import java.io.File
 import java.io.IOException
