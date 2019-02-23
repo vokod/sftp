@@ -1,5 +1,7 @@
+// TODO: sikertelen kapcsolatnal uzenet
 // TODO: important: sshConnectionData activitynel a billentyuzet kitakarja a tartalmat
 // TODO: nice to have: sshConnectionData editnel a regi key fajlokat torolni kellene
 // TODO: nice to have: titkositani a db-ben a jelszavakat (yavel)
 // TODO: nice to have: titkositani a kulcs es known_host file-t, mint value-t es berakni a db-be/sp-be
 // TODO: nice to have: edit known hosts
+// TODO: nice to have: sftp activityben is ki lehessen kapcsolni a hidden filest

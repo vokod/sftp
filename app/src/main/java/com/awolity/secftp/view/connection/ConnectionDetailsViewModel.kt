@@ -70,7 +70,7 @@ class ConnectionDetailsViewModel(application: Application) : AndroidViewModel(ap
             val savedFileName = keyFilePrefix + file.name
             val savedFile = saveFile(file, savedFileName)
             if (savedFile != null) {
-                listener(savedFile)
+                AppExecutors.getInstance().mainThread().execute { listener(savedFile) }
             } else {
                 _message.postValue("Error while saving private key file")
             }
@@ -79,10 +79,8 @@ class ConnectionDetailsViewModel(application: Application) : AndroidViewModel(ap
 
     fun save(sshConnectionData: SshConnectionData) {
         AppExecutors.getInstance().diskIO().execute {
-            if (sshConnectionData.authMethod > 0) { // key authentication
-                if (db.connectionDao().insert(sshConnectionData) == -1L) {
-                    db.connectionDao().update(sshConnectionData)
-                }
+            if (db.connectionDao().insert(sshConnectionData) == -1L) {
+                db.connectionDao().update(sshConnectionData)
             }
             _finish.postValue(true)
         }

@@ -23,6 +23,7 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
     private var _actualDir: MutableLiveData<String> = MutableLiveData()
     private var _isBusy: MutableLiveData<Boolean> = MutableLiveData()
     private var _message: MutableLiveData<String> = MutableLiveData()
+    private var _errorDialogMessage: MutableLiveData<String> = MutableLiveData()
     private val sftpClient: SftpClient
     private val dirs = ArrayDeque<String>()
 
@@ -40,6 +41,10 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
 
     var message: LiveData<String> = _message
         get() = _message
+        private set
+
+    var errorDialogMessage: LiveData<String> = _errorDialogMessage
+        get() = _errorDialogMessage
         private set
 
     var sortBy = 0
@@ -74,11 +79,13 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         override fun onVerifyError(e: Exception) {
             Log.d(TAG, "...onVerifyError: " + e.localizedMessage)
             _isBusy.postValue(false)
+            _errorDialogMessage.postValue("Known_hosts file verification error")
         }
 
         override fun onConnectionError(e: Exception) {
             Log.d(TAG, "...onConnectionError: " + e.localizedMessage)
             Log.d(TAG, "...cause: " + e.cause)
+            _errorDialogMessage.postValue("Error while connecting: ${e.message}")
             _isBusy.postValue(false)
         }
     }
@@ -94,7 +101,7 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
 
             override fun onError(e: Exception) {
                 Log.d(TAG, "...onError: ${e.localizedMessage}")
-                _message.postValue("Error while disconnecting: ${e.localizedMessage}")
+                _errorDialogMessage.postValue("Error while disconnecting")
             }
         })
     }

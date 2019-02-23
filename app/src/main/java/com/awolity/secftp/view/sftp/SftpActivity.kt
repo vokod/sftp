@@ -171,6 +171,15 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
         sftpViewModel.message.observe(this, Observer {
             toast(it)
         })
+
+        sftpViewModel.errorDialogMessage.observe(this, Observer {
+            MaterialDialog(this).show {
+                title(text = "Error")
+                message(text = it)
+                icon(R.drawable.ic_error_black_24dp)
+                positiveButton { finish() }
+            }
+        })
     }
 
     private fun startProgress() {
