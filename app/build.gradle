@@ -78,4 +78,6 @@ dependencies {
 
     //anko
     implementation "org.jetbrains.anko:anko:0.10.8"
+
+    implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.7'
 }

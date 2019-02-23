@@ -72,13 +72,13 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         override fun onVerifyError(e: Exception) {
-            Log.d(SftpActivity.TAG, "...onVerifyError: " + e.localizedMessage)
+            Log.d(TAG, "...onVerifyError: " + e.localizedMessage)
             _isBusy.postValue(false)
         }
 
         override fun onConnectionError(e: Exception) {
-            Log.d(SftpActivity.TAG, "...onConnectionError: " + e.localizedMessage)
-            Log.d(SftpActivity.TAG, "...cause: " + e.cause)
+            Log.d(TAG, "...onConnectionError: " + e.localizedMessage)
+            Log.d(TAG, "...cause: " + e.cause)
             _isBusy.postValue(false)
         }
     }
@@ -88,12 +88,12 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         sftpClient.disconnect(object : SftpClient.DisconnectListener {
 
             override fun onDisconnected() {
-                Log.d(SftpActivity.TAG, "...onDisconnected")
+                Log.d(TAG, "...onDisconnected")
                 _isBusy.postValue(false)
             }
 
             override fun onError(e: Exception) {
-                Log.d(SftpActivity.TAG, "...onError: ${e.localizedMessage}")
+                Log.d(TAG, "...onError: ${e.localizedMessage}")
                 _message.postValue("Error while disconnecting: ${e.localizedMessage}")
             }
         })

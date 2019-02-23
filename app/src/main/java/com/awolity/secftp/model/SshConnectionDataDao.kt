@@ -1,10 +1,7 @@
 package com.awolity.secftp.model
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface SshConnectionDataDao {
@@ -21,8 +18,11 @@ interface SshConnectionDataDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(sshConnectionData: List<SshConnectionData>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(sshConnectionData: SshConnectionData): Long
+
+    @Update
+    fun update(sshConnectionData: SshConnectionData)
 
     @Query("DELETE FROM connection_table")
     fun deleteAll()

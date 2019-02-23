@@ -50,7 +50,7 @@ class SftpClient(val context: Context) {
                 client.authPassword(data.username, data.password)
                 Log.d(TAG, "...authenticated with password")
             } else { // certificate
-                val keyProvider = client.loadKeys(data.privKeyFileName)
+                val keyProvider = client.loadKeys(File(context.filesDir, data.privKeyFileName).absolutePath)
                 client.authPublickey(data.username, keyProvider)
                 Log.d(TAG, "...authenticated with key")
             }

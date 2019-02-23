@@ -4,6 +4,7 @@ import com.hierynomus.sshj.signature.SignatureEdDSA
 import net.schmizz.sshj.DefaultConfig
 import net.schmizz.sshj.common.SecurityUtils
 import net.schmizz.sshj.signature.SignatureECDSA
+import net.schmizz.sshj.signature.SignatureRSA
 import net.schmizz.sshj.transport.random.JCERandom
 import net.schmizz.sshj.transport.random.SingletonRandomFactory
 
@@ -14,7 +15,7 @@ class AndroidConfig : DefaultConfig() {
 
     // don't add ECDSA
     override fun initSignatureFactories() {
-        setSignatureFactories(/*new SignatureRSA.Factory(),*/
+        setSignatureFactories( /*SignatureRSA.Factory(),*/
             /* new SignatureDSA.Factory(),*/
             // but add EdDSA
             SignatureECDSA.Factory256(),

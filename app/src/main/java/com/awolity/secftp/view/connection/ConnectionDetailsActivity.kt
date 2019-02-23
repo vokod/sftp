@@ -38,20 +38,22 @@ class ConnectionDetailsActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item!!.itemId) {
-            R.id.menu_item_check ->
-                vm.validate(
-                    SshConnectionData(
-                        0,
-                        tiet_title.text.toString(),
-                        tiet_address.text.toString(),
-                        tiet_username.text.toString(),
-                        tiet_port.text.toString().toInt(),
-                        rs_auth_type.getSelectedRadioButton(),
-                        pubKeyFile,
-                        privKeyFile,
-                        tiet_password.text.toString()
-                    )
+            R.id.menu_item_check -> {
+                val sshConnectionData = SshConnectionData(
+                    intent.getLongExtra(EXTRA_ID, 0),
+                    tiet_title.text.toString(),
+                    tiet_address.text.toString(),
+                    tiet_username.text.toString(),
+                    tiet_port.text.toString().toInt(),
+                    rs_auth_type.getSelectedRadioButton(),
+                    pubKeyFile,
+                    privKeyFile,
+                    tiet_password.text.toString()
                 )
+                if (vm.validate(sshConnectionData)) {
+                    vm.save(sshConnectionData)
+                }
+            }
         }
         return true
     }
@@ -74,7 +76,7 @@ class ConnectionDetailsActivity : AppCompatActivity() {
         bs_pub_key.setOnClickListener {
             MaterialDialog(this).show {
                 fileChooser { _, file ->
-                    pubKeyFile = file.absolutePath
+                    vm.importFile(file) { pubKeyFile = it.name }
                 }
             }
         }
@@ -82,7 +84,7 @@ class ConnectionDetailsActivity : AppCompatActivity() {
         bs_priv_key.setOnClickListener {
             MaterialDialog(this).show {
                 fileChooser { _, file ->
-                    privKeyFile = file.absolutePath
+                    vm.importFile(file) { privKeyFile = it.name }
                 }
             }
         }
@@ -105,13 +107,30 @@ class ConnectionDetailsActivity : AppCompatActivity() {
                     tiet_username.setText(it.username)
                     tiet_password.setText(it.password)
                     rs_auth_type.setSelectedRadioButton(it.authMethod)
-                    if (File(filesDir, it.privKeyFileName).exists()) {
-                        bs_priv_key.checked = true
-                        privKeyFile = it.privKeyFileName
+                    if (it.authMethod == 0) {
+                        bs_pub_key.isEnabled = false
+                        bs_priv_key.isEnabled = false
+                        tiet_password.isEnabled = true
+                    } else {
+                        bs_pub_key.isEnabled = true
+                        bs_priv_key.isEnabled = true
+                        tiet_password.isEnabled = false
                     }
-                    if (File(filesDir, it.pubKeyFileName).exists()) {
-                        bs_pub_key.checked = true
-                        pubKeyFile = it.pubKeyFileName
+                    when {
+                        it.privKeyFileName.isEmpty() -> bs_priv_key.checked = false
+                        File(filesDir, it.privKeyFileName).exists() -> {
+                            bs_priv_key.checked = true
+                            privKeyFile = it.privKeyFileName
+                        }
+                        else -> bs_priv_key.checked = false
+                    }
+                    when {
+                        it.pubKeyFileName.isEmpty() -> bs_pub_key.checked = false
+                        File(filesDir, it.pubKeyFileName).exists() -> {
+                            bs_pub_key.checked = true
+                            pubKeyFile = it.pubKeyFileName
+                        }
+                        else -> bs_pub_key.checked = false
                     }
                 })
             }
@@ -120,7 +139,7 @@ class ConnectionDetailsActivity : AppCompatActivity() {
 
     private fun setupMessageObserver() {
         vm.message.observe(this, Observer {
-            Toast.makeText(this@ConnectionDetailsActivity, it, Toast.LENGTH_LONG).show()
+            if (it.isNotEmpty()) Toast.makeText(this@ConnectionDetailsActivity, it, Toast.LENGTH_LONG).show()
         })
     }
 
@@ -132,8 +151,6 @@ class ConnectionDetailsActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_ID = "extra id"
-        const val TAG_PRIV_KEY = "private key"
-        const val TAG_PUB_KEY = "public key"
         fun getNewIntent(context: Context, id: Long): Intent {
             val intent = Intent(context, ConnectionDetailsActivity::class.java)
             intent.putExtra(EXTRA_ID, id)
