@@ -16,7 +16,7 @@ class AndroidConfig : DefaultConfig() {
 
     // don't add ECDSA
     override fun initSignatureFactories() {
-        setSignatureFactories( SignatureRSA.Factory(),
+        setSignatureFactories(/* SignatureRSA.Factory(),*/
             SignatureDSA.Factory(),
             // but add EdDSA
             SignatureECDSA.Factory256(),

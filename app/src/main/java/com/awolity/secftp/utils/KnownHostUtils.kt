@@ -2,6 +2,7 @@ package com.awolity.secftp.utils
 
 import android.content.Context
 import android.util.Log
+import com.awolity.secftp.view.knownhosts.KnownHost
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
@@ -27,7 +28,7 @@ fun getKnownHostsFile(context: Context): File {
     return File(context.filesDir, KNOWN_HOSTS_FILE_NAME)
 }
 
-private fun readKnownHostsFile(knownHostsFile: File): MutableList<String> {
+fun readKnownHostsFile(knownHostsFile: File): MutableList<String> {
     val result = mutableListOf<String>()
     val reader: BufferedReader
     try {
@@ -58,6 +59,19 @@ fun importKnownHostsFile(context: Context, newFile: File) {
     } else { // known hosts file does not exist, simply copy the new file
         newFile.copyTo(File(context.filesDir, KNOWN_HOSTS_FILE_NAME))
     }
+}
+
+fun writeKnownHostFile(context: Context, knownHosts: List<KnownHost>) {
+    val file = File(context.filesDir, KNOWN_HOSTS_FILE_NAME)
+    file.delete()
+    file.createNewFile()
+    var prefix = ""
+    val builder = StringBuilder()
+    knownHosts.forEach {
+        builder.append(prefix + it.address + " " + it.type + " " + it.key)
+        prefix = "\n"
+    }
+    file.writeText(builder.toString())
 }
 
 private const val TAG = "KnownHostUtils"

@@ -10,6 +10,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.files.fileChooser
 import com.awolity.secftp.*
 import com.awolity.secftp.utils.*
+import com.awolity.secftp.view.knownhosts.KnowHostsActivity
 import com.awolity.settingviews.ButtonSetting
 import com.awolity.settingviews.RadiogroupSetting
 import kotlinx.android.synthetic.main.activity_settings.*
@@ -60,7 +61,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         bs_edit_known_hosts.setOnClickListener {
-            // TODO
+            startActivity(KnowHostsActivity.getNewIntent(this))
         }
 
         ss_show_hidden_files.checked = getShowHiddenFiles(this)

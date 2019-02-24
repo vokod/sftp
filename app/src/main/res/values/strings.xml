@@ -7,4 +7,5 @@
     <string name="sortby_date">Modification time</string>
 
     <string name="search">Search</string>
+    <string name="title_activity_know_host">KnowHostActivity</string>
 </resources>

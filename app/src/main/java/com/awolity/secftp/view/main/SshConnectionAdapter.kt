@@ -1,20 +1,17 @@
 package com.awolity.secftp.view.main
 
-import android.graphics.drawable.Drawable
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.amulyakhare.textdrawable.TextDrawable
-import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.awolity.secftp.R
 import com.awolity.secftp.model.SshConnectionData
+import com.awolity.secftp.utils.getInitial
 import java.util.*
-import android.view.LayoutInflater
 
 class SshConnectionAdapter(private val inflater: LayoutInflater,
     private val sshConnectionListener: SshConnectionListener
@@ -94,20 +91,8 @@ class SshConnectionAdapter(private val inflater: LayoutInflater,
                 firstLetter = item.name.substring(0, 1)
             }
             initialImageView.setImageDrawable(
-                getInitial(
-                    firstLetter,item.id.toString(), initialImageView.layoutParams.width
-                )
+                getInitial(firstLetter)
             )
-        }
-
-        private fun getInitial(firstLetter: String, colorBase: String, widthInPixels: Int): Drawable {
-            val generator = ColorGenerator.MATERIAL
-            return TextDrawable.builder()
-                .beginConfig()
-                .width(widthInPixels)  // width in px
-                .height(widthInPixels) // height in px
-                .endConfig()
-                .buildRound(firstLetter, generator.getColor(colorBase))
         }
     }
 }

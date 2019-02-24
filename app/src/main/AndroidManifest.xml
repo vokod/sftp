@@ -16,24 +16,36 @@
             android:theme="@style/SecftpAppTheme"
             tools:ignore="GoogleAppIndexingWarning"
             tools:replace="android:allowBackup">
-        <activity android:name=".view.main.MainActivity"
-                  android:theme="@style/SecftpAppTheme">
+        <activity
+                android:name=".view.knownhosts.KnowHostsActivity"
+                android:label="@string/title_activity_know_host"
+                android:parentActivityName=".view.settings.SettingsActivity">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.awolity.secftp.view.settings.SettingsActivity"/>
+        </activity>
+        <activity
+                android:name=".view.main.MainActivity"
+                android:theme="@style/SecftpAppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".view.connection.ConnectionDetailsActivity"
-                  android:windowSoftInputMode="adjustResize|adjustPan">
+        <activity
+                android:name=".view.connection.ConnectionDetailsActivity"
+                android:windowSoftInputMode="adjustResize|adjustPan">
         </activity>
-        <activity android:name=".view.sftp.SftpActivity"
-                  android:theme="@style/SecftpAppTheme.NoActionBar">
+        <activity
+                android:name=".view.sftp.SftpActivity"
+                android:theme="@style/SecftpAppTheme.NoActionBar">
         </activity>
-        <activity android:name=".view.settings.SettingsActivity"
-                  android:label="Settings"
-                  android:parentActivityName=".view.sftp.SftpActivity"
-                  android:windowSoftInputMode="adjustResize"/>
+        <activity
+                android:name=".view.settings.SettingsActivity"
+                android:label="Settings"
+                android:parentActivityName=".view.sftp.SftpActivity"
+                android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>

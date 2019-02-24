@@ -60,7 +60,7 @@ class SftpClient(val context: Context) {
         } catch (e: ConnectionException) {
             listener.onConnectionError(SshException("SshConnectionData error", e))
         } catch (e: TransportException) {
-            listener.onConnectionError(SshException("Transport exception error", e))
+            listener.onConnectionError(SshException("Transport exception error - host key not verifiable", e))
             // on TransportException: [HOST_KEY_NOT_VERIFIABLE]
         } catch (e: UserAuthException) {
             listener.onConnectionError(SshException("User authentication error", e))

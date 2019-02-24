@@ -69,8 +69,8 @@ class RemoteFileAdapter(
     class RemoteFileItemViewHolder(itemView: View, private val listener: RemoteFileListener) :
         RecyclerView.ViewHolder(itemView) {
 
-        private val titleTextView: TextView = itemView.findViewById(R.id.tv_title_item_incoming)
-        private val descriptionTextView: TextView = itemView.findViewById(R.id.tv_description_item_incoming)
+        private val titleTextView: TextView = itemView.findViewById(R.id.tv_host_address)
+        private val descriptionTextView: TextView = itemView.findViewById(R.id.tv_key_type)
         private val initialImageView: ImageView = itemView.findViewById(R.id.iv_initial)
         private val clickOverlay: FrameLayout = itemView.findViewById(R.id.fl_click_overlay)
 
