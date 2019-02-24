@@ -13,7 +13,7 @@ import com.awolity.secftp.utils.getInitial
 import java.util.*
 
 class KnownHostsAdapter(
-    private val inflater: LayoutInflater, private val listener: KnownHostListener
+    private val inflater: LayoutInflater, private val listener: (KnownHost) -> Unit
 ) : RecyclerView.Adapter<KnownHostsAdapter.KnownHostViewHolder>() {
 
     interface KnownHostListener{
@@ -60,7 +60,7 @@ class KnownHostsAdapter(
         return items.size
     }
 
-    class KnownHostViewHolder(itemView: View, private val listener: KnownHostListener) :
+    class KnownHostViewHolder(itemView: View, private val listener: (KnownHost) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
 
         private val addressTextView: TextView = itemView.findViewById(R.id.tv_host_address)
@@ -70,7 +70,7 @@ class KnownHostsAdapter(
 
         fun bind(item: KnownHost) {
             clickOverlay.setOnLongClickListener {
-                listener.onKnownHostDeleteClicked(item)
+                listener(item)
                 true
             }
 

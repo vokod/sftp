@@ -17,7 +17,7 @@ import com.awolity.secftp.utils.importKnownHostsFile
 import kotlinx.android.synthetic.main.activity_know_host.*
 import org.jetbrains.anko.toast
 
-class KnowHostsActivity : AppCompatActivity(), KnownHostsAdapter.KnownHostListener {
+class KnowHostsActivity : AppCompatActivity() {
 
     private lateinit var adapter: KnownHostsAdapter
     private lateinit var vm: KnownHostsViewModel
@@ -30,10 +30,6 @@ class KnowHostsActivity : AppCompatActivity(), KnownHostsAdapter.KnownHostListen
         setupWidgets()
         setupRv()
         setupVm()
-    }
-
-    override fun onKnownHostDeleteClicked(item: KnownHost) {
-        vm.deleteKnownHost(item)
     }
 
     private fun setupWidgets() {
@@ -52,7 +48,14 @@ class KnowHostsActivity : AppCompatActivity(), KnownHostsAdapter.KnownHostListen
     }
 
     private fun setupRv() {
-        adapter = KnownHostsAdapter(layoutInflater, this)
+        adapter = KnownHostsAdapter(layoutInflater) { knownHost -> Unit
+            MaterialDialog(this@KnowHostsActivity).show {
+                title(text = "Delete")
+                message(text = "Do you really want to delete the known host ${knownHost.address}?")
+                positiveButton { vm.deleteKnownHost(knownHost) }
+                negativeButton { dismiss() }
+            }
+        }
         val linearLayoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         rv_known_hosts.layoutManager = linearLayoutManager
         rv_known_hosts.adapter = adapter

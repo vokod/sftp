@@ -1,6 +1,3 @@
 // TODO: important: sshConnectionData activitynel a billentyuzet kitakarja a tartalmat
-// TODO: nice to have: titkositani a db-ben a jelszavakat (yavel)
-// TODO: nice to have: titkositani a kulcs es known_host file-t, mint value-t es berakni a db-be/sp-be
-// TODO: nice to have: edit known hosts
-// TODO: learn: a KnownHostsAdapter listenerjet atalakitani lambdava
+// TODO: feature: unknown host pub kulcsa elso csatlakozaskor irodjon be a known_hosts fajlba
 
