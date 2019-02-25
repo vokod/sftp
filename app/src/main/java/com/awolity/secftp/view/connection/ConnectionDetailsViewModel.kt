@@ -9,8 +9,10 @@ import androidx.lifecycle.MutableLiveData
 import com.awolity.secftp.model.SshConnectionData
 import com.awolity.secftp.model.SshConnectionDatabase
 import com.awolity.secftp.utils.AppExecutors
+import com.awolity.secftp.utils.YAVEL_KEY_ALIAS
 import com.awolity.secftp.utils.deleteFileIfExist
 import com.awolity.secftp.utils.saveFile
+import com.awolity.yavel.Yavel
 import org.apache.commons.validator.routines.InetAddressValidator
 import java.io.File
 import java.util.*
@@ -45,7 +47,7 @@ class ConnectionDetailsViewModel(application: Application) : AndroidViewModel(ap
     }
 
     fun validate(sshConnectionData: SshConnectionData): Boolean {
-        val isUrl =  Patterns.WEB_URL.matcher(sshConnectionData.address).matches()
+        val isUrl = Patterns.WEB_URL.matcher(sshConnectionData.address).matches()
         val isInetAddress = InetAddressValidator.getInstance().isValid(sshConnectionData.address)
         if (!(isUrl || isInetAddress)) {
             _message.value = "Host address is not valid."
@@ -81,6 +83,9 @@ class ConnectionDetailsViewModel(application: Application) : AndroidViewModel(ap
 
     fun save(sshConnectionData: SshConnectionData) {
         AppExecutors.getInstance().diskIO().execute {
+            if (sshConnectionData.authMethod == 0) {
+                sshConnectionData.password = Yavel.get(YAVEL_KEY_ALIAS).encryptString(sshConnectionData.password)
+            }
             if (db.connectionDao().insert(sshConnectionData) == -1L) {
                 db.connectionDao().update(sshConnectionData)
             }

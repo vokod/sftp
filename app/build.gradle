@@ -63,6 +63,9 @@ dependencies {
     // yapel
     implementation 'com.github.vokod:yapel:0.1'
 
+    // yavel
+    implementation 'com.github.vokod:yavel:0.3'
+
     // dexter
     implementation 'com.karumi:dexter:5.0.0'
 

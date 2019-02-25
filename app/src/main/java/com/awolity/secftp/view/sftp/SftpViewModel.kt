@@ -10,10 +10,8 @@ import com.awolity.secftp.*
 import com.awolity.secftp.model.SshConnectionDatabase
 import com.awolity.secftp.ssh.SftpClient
 import com.awolity.secftp.ssh.SftpClient.ConnectListener
-import com.awolity.secftp.utils.AppExecutors
-import com.awolity.secftp.utils.getKnownHostsFile
-import com.awolity.secftp.utils.getOnlyTrustedServers
-import com.awolity.secftp.utils.getShowHiddenFiles
+import com.awolity.secftp.utils.*
+import com.awolity.yavel.Yavel
 import net.schmizz.sshj.sftp.RemoteResourceInfo
 import java.io.File
 import java.io.IOException
@@ -66,6 +64,9 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         AppExecutors.getInstance().diskIO().execute {
             val connectionData = SshConnectionDatabase.getInstance(getApplication<SecftpApplication>()).connectionDao()
                 .getByIdSync(id)
+            if (connectionData.authMethod == 0) {
+                connectionData.password = Yavel.get(YAVEL_KEY_ALIAS).decryptString(connectionData.password)
+            }
             if (getOnlyTrustedServers(getApplication())) {
                 sftpClient.connectToKnownHost(getKnownHostsFile(getApplication()), connectionData, connectListener)
             } else {
