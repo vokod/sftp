@@ -14,9 +14,14 @@ import net.schmizz.sshj.transport.random.SingletonRandomFactory
  */
 class AndroidConfig : DefaultConfig() {
 
+    // IMPORTANT
+    // ECDSA is working only, if public key is provided in the same directory (and filename) as
+    // private key
+
     // don't add ECDSA
     override fun initSignatureFactories() {
-        setSignatureFactories(/* SignatureRSA.Factory(),*/
+        setSignatureFactories(
+            SignatureRSA.Factory(),
             SignatureDSA.Factory(),
             // but add EdDSA
             SignatureECDSA.Factory256(),

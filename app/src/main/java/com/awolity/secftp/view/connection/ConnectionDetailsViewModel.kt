@@ -71,7 +71,7 @@ class ConnectionDetailsViewModel(application: Application) : AndroidViewModel(ap
     fun importPrivKeyFile(file: File, oldFileName: String, listener: (File) -> Unit) {
         AppExecutors.getInstance().diskIO().execute {
             deleteFileIfExist(context, oldFileName)
-            val savedFileName = keyFilePrefix + file.name
+            val savedFileName = UUID.randomUUID().toString() + "_" + file.name
             val savedFile = saveFile(context, file, savedFileName)
             if (savedFile != null) {
                 AppExecutors.getInstance().mainThread().execute { listener(savedFile) }
@@ -95,6 +95,5 @@ class ConnectionDetailsViewModel(application: Application) : AndroidViewModel(ap
 
     companion object {
         private const val TAG = "ConnectionDetailsViewModel"
-        private var keyFilePrefix = UUID.randomUUID().toString() + "_"
     }
 }

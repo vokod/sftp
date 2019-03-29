@@ -54,11 +54,12 @@ dependencies {
     implementation 'com.actinarium.aligned:aligned:0.1'
 
     // material dialog
-    implementation 'com.afollestad.material-dialogs:core:2.0.0'
-    implementation 'com.afollestad.material-dialogs:files:2.0.0'
+    implementation 'com.afollestad.material-dialogs:core:2.6.0'
+    implementation 'com.afollestad.material-dialogs:files:2.6.0'
+    implementation 'com.afollestad.material-dialogs:input:2.6.0'
 
     //setting views
-    implementation 'com.github.vokod:SettingViews:08fcf4c280'
+    implementation 'com.github.vokod:SettingViews:0.5'
 
     // yapel
     implementation 'com.github.vokod:yapel:0.1'
