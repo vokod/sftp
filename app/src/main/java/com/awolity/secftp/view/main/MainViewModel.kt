@@ -23,7 +23,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun deleteConnection(sshConnectionData: SshConnectionData) {
-        AppExecutors.getInstance().diskIO().execute{
+        AppExecutors.diskIO().execute{
             SshConnectionDatabase.getInstance(getApplication()).connectionDao().delete(sshConnectionData.id)
             deleteFileIfExist(context, sshConnectionData.privKeyFileName)
         }

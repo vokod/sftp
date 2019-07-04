@@ -52,12 +52,12 @@ class RemoteFileAdapter(
         }).dispatchUpdatesTo(this)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RemoteFileAdapter.RemoteFileItemViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RemoteFileItemViewHolder {
         val v = inflater.inflate(R.layout.item_remote_file, parent, false)
         return RemoteFileItemViewHolder(v, remoteFileListener)
     }
 
-    override fun onBindViewHolder(holder: RemoteFileAdapter.RemoteFileItemViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RemoteFileItemViewHolder, position: Int) {
         holder.bind(items[position])
     }
 

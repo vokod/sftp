@@ -25,14 +25,4 @@ fun getInitial(text: String): Drawable {
     return TextDrawable.builder().buildRound(firstLetter, generator.getColor(text))
 }
 
-fun getInitial(firstLetter: String, colorBase: String, widthInPixels: Int): Drawable {
-    val generator = ColorGenerator.MATERIAL
-    return TextDrawable.builder()
-        .beginConfig()
-        .width(widthInPixels)  // width in px
-        .height(widthInPixels) // height in px
-        .endConfig()
-        .buildRound(firstLetter, generator.getColor(colorBase))
-}
-
 

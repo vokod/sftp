@@ -69,12 +69,12 @@ class ConnectionDetailsViewModel(application: Application) : AndroidViewModel(ap
     }
 
     fun importPrivKeyFile(file: File, oldFileName: String, listener: (File) -> Unit) {
-        AppExecutors.getInstance().diskIO().execute {
+        AppExecutors.diskIO().execute {
             deleteFileIfExist(context, oldFileName)
             val savedFileName = UUID.randomUUID().toString() + "_" + file.name
             val savedFile = saveFile(context, file, savedFileName)
             if (savedFile != null) {
-                AppExecutors.getInstance().mainThread().execute { listener(savedFile) }
+                AppExecutors.mainThread().execute { listener(savedFile) }
             } else {
                 _message.postValue("Error while saving private key file")
             }
@@ -82,7 +82,7 @@ class ConnectionDetailsViewModel(application: Application) : AndroidViewModel(ap
     }
 
     fun save(sshConnectionData: SshConnectionData) {
-        AppExecutors.getInstance().diskIO().execute {
+        AppExecutors.diskIO().execute {
             if (sshConnectionData.authMethod == 0) {
                 sshConnectionData.password = Yavel.get(YAVEL_KEY_ALIAS).encryptString(sshConnectionData.password)
             }
@@ -91,9 +91,5 @@ class ConnectionDetailsViewModel(application: Application) : AndroidViewModel(ap
             }
             _finish.postValue(true)
         }
-    }
-
-    companion object {
-        private const val TAG = "ConnectionDetailsViewModel"
     }
 }

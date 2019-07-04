@@ -61,7 +61,7 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
 
     fun connect(id: Long) {
         _isBusy.postValue(true)
-        AppExecutors.getInstance().diskIO().execute {
+        AppExecutors.diskIO().execute {
             val connectionData = SshConnectionDatabase.getInstance(getApplication<SecftpApplication>()).connectionDao()
                 .getByIdSync(id)
             if (connectionData.authMethod == 0) {
@@ -77,19 +77,19 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
 
     private val connectListener = object : ConnectListener {
         override fun onConnected() {
-            Log.d(TAG, "...onConnected")
+            MyLog.d(TAG, "...onConnected")
             listDirectory("/", true)
         }
 
         override fun onVerifyError(e: Exception) {
-            Log.d(TAG, "...onVerifyError: " + e.localizedMessage)
+            MyLog.d(TAG, "...onVerifyError: " + e.localizedMessage)
             _isBusy.postValue(false)
             _errorDialogMessage.postValue("Known_hosts file verification error")
         }
 
         override fun onConnectionError(e: Exception) {
-            Log.d(TAG, "...onConnectionError: " + e.localizedMessage)
-            Log.d(TAG, "...cause: " + e.cause)
+            MyLog.d(TAG, "...onConnectionError: " + e.localizedMessage)
+            MyLog.d(TAG, "...cause: " + e.cause)
             _errorDialogMessage.postValue("Error while connecting: ${e.message}")
             _isBusy.postValue(false)
         }
@@ -100,12 +100,12 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         sftpClient.disconnect(object : SftpClient.DisconnectListener {
 
             override fun onDisconnected() {
-                Log.d(TAG, "...onDisconnected")
+                MyLog.d(TAG, "...onDisconnected")
                 _isBusy.postValue(false)
             }
 
             override fun onError(e: Exception) {
-                Log.d(TAG, "...onError: ${e.localizedMessage}")
+                MyLog.d(TAG, "...onError: ${e.localizedMessage}")
                 _errorDialogMessage.postValue("Error while disconnecting")
             }
         })
@@ -115,13 +115,13 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         _isBusy.postValue(true)
         sftpClient.uploadFile(file, _actualDir.value!!, object : SftpClient.UploadListener {
             override fun onFileUploaded(result: String) {
-                Log.d(TAG, "...onFileUploaded: $result")
+                MyLog.d(TAG, "...onFileUploaded: $result")
                 listDirectory(_actualDir.value!!, false)
                 _message.postValue("File uploaded")
             }
 
             override fun onError(e: Exception) {
-                Log.d(TAG, "...onError: ${e.localizedMessage}")
+                MyLog.d(TAG, "...onError: ${e.localizedMessage}")
                 _isBusy.postValue(false)
                 _message.postValue("File upload error: ${e.localizedMessage}")
             }
@@ -133,13 +133,13 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         sftpClient.downloadFile(item, File(Environment.getExternalStorageDirectory(),"/Download"),
             object : SftpClient.DownloadListener {
                 override fun onFileDownloaded(file: File) {
-                    Log.d(TAG, "onFileDownloaded - " + file.name)
+                    MyLog.d(TAG, "onFileDownloaded - " + file.name)
                     _isBusy.postValue(false)
                     _message.postValue("File downloaded")
                 }
 
                 override fun onError(e: Exception) {
-                    Log.d(TAG, "onError - " + e.localizedMessage)
+                    MyLog.d(TAG, "onError - " + e.localizedMessage)
                     _isBusy.postValue(false)
                     _message.postValue("File download error: ${e.localizedMessage}")
                 }
@@ -150,13 +150,13 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         _isBusy.postValue(true)
         sftpClient.deleteFile(item, object : SftpClient.DeleteListener {
             override fun onFileDeleted(name: String) {
-                Log.d(TAG, "onFileDeleted - $name")
+                MyLog.d(TAG, "onFileDeleted - $name")
                 listDirectory(_actualDir.value!!, false)
                 _message.postValue("File deleted")
             }
 
             override fun onError(e: Exception) {
-                Log.d(TAG, "onFileDeleted - ${e.localizedMessage}")
+                MyLog.d(TAG, "onFileDeleted - ${e.localizedMessage}")
                 _isBusy.postValue(false)
                 _message.postValue("File delete error: ${e.localizedMessage}")
             }
@@ -171,7 +171,7 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
 
         sftpClient.listDirectory(path, object : SftpClient.ListDirectoryListener {
             override fun onDirectoryListed(remoteFiles: List<RemoteResourceInfo>) {
-                Log.d(TAG, "...onDirectoryListed:")
+                MyLog.d(TAG, "...onDirectoryListed:")
                 if (!getShowHiddenFiles(getApplication())) {
                     _files.postValue(sort(filterHidden(remoteFiles)))
                 } else {
@@ -182,8 +182,8 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onError(e: Exception) {
-                Log.d(TAG, "...onError: ${e.localizedMessage}")
-                Log.d(TAG, "...cause: ${e.cause}")
+                MyLog.d(TAG, "...onError: ${e.localizedMessage}")
+                MyLog.d(TAG, "...cause: ${e.cause}")
                 _message.postValue("Directory listing error: ${e.localizedMessage}")
             }
         })
@@ -222,7 +222,7 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun backOrPop(): Boolean {
-        Log.d(TAG, "back")
+        MyLog.d(TAG, "back")
         return try {
             if (!isSearchedRightNow) {
                 dirs.pop()
@@ -236,10 +236,10 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         } catch (e: NoSuchElementException) {
             true
         } catch (e: IOException) {
-            Log.e(TAG, "error initializing adapter!", e)
+            MyLog.e(TAG, "error initializing adapter!", e)
             true
         } catch (e: IllegalStateException) {
-            Log.e(TAG, "IllegalStateException", e)
+            MyLog.e(TAG, "IllegalStateException", e)
             true
         }
     }

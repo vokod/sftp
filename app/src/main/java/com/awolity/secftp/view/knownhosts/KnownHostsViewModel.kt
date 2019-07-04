@@ -24,7 +24,7 @@ class KnownHostsViewModel(application: Application) : AndroidViewModel(applicati
 
     init {
         context = application
-        AppExecutors.getInstance().diskIO().execute {
+        AppExecutors.diskIO().execute {
            loadKnownHostsFile()
         }
     }
@@ -41,7 +41,7 @@ class KnownHostsViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun deleteKnownHost(itemToDelete: KnownHost) {
-        AppExecutors.getInstance().diskIO().execute {
+        AppExecutors.diskIO().execute {
             _knownHosts.value?.remove(itemToDelete)
             writeKnownHostFile(context, _knownHosts.value as List<KnownHost>)
             loadKnownHostsFile()

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import com.awolity.secftp.utils.AppExecutors
 import com.awolity.secftp.model.SshConnectionData
+import com.awolity.secftp.utils.MyLog
 import net.schmizz.sshj.SSHClient
 import net.schmizz.sshj.connection.ConnectionException
 import net.schmizz.sshj.sftp.RemoteResourceInfo
@@ -21,14 +22,14 @@ class SftpClient(val context: Context) {
     fun isOnline() = client.isAuthenticated
 
     fun connectToAnything(data: SshConnectionData, listener: ConnectListener) {
-        AppExecutors.getInstance().network().execute {
+        AppExecutors.networkIO().execute {
             client.addHostKeyVerifier(NullHostKeyVerifier())
             connect(data, listener)
         }
     }
 
     fun connectToKnownHost(hostFile: File, data: SshConnectionData, listener: ConnectListener) {
-        AppExecutors.getInstance().network().execute {
+        AppExecutors.networkIO().execute {
             try {
                 client.loadKnownHosts(hostFile)
             } catch (e: IOException) {
@@ -41,18 +42,18 @@ class SftpClient(val context: Context) {
     @WorkerThread
     private fun connect(data: SshConnectionData, listener: ConnectListener) {
         try {
-            Log.d(TAG, "Connect:")
+            MyLog.d(TAG, "Connect:")
             client.connect(data.address, data.port)
-            Log.d(TAG, "...connected")
-            Log.d(TAG, "Authenticate:")
+            MyLog.d(TAG, "...connected")
+            MyLog.d(TAG, "Authenticate:")
 
             if (data.authMethod == 0) { // password
                 client.authPassword(data.username, data.password)
-                Log.d(TAG, "...authenticated with password")
+                MyLog.d(TAG, "...authenticated with password")
             } else { // certificate
                 val keyProvider = client.loadKeys(File(context.filesDir, data.privKeyFileName).absolutePath)
                 client.authPublickey(data.username, keyProvider)
-                Log.d(TAG, "...authenticated with key")
+                MyLog.d(TAG, "...authenticated with key")
             }
             client.startSession()
 
@@ -74,8 +75,8 @@ class SftpClient(val context: Context) {
     }
 
     fun listDirectory(path: String, listener: ListDirectoryListener) {
-        Log.d(TAG, "listDirectory() called with: sshClient = [$client], listener = [$listener]")
-        AppExecutors.getInstance().network().execute {
+        MyLog.d(TAG, "listDirectory() called with: sshClient = [$client], listener = [$listener]")
+        AppExecutors.networkIO().execute {
             if (!client.isConnected) {
                 listener.onError(SshException("Client not connected", null))
             } else if (!client.isAuthenticated) {
@@ -95,7 +96,7 @@ class SftpClient(val context: Context) {
     }
 
     fun downloadFile(remoteFile: RemoteResourceInfo, inputDir: File, listener: DownloadListener) {
-        AppExecutors.getInstance().network().execute(Runnable {
+        AppExecutors.networkIO().execute(Runnable {
             val inFile = File(inputDir, remoteFile.name)
             if (remoteFile.isDirectory || !remoteFile.isRegularFile) {
                 listener.onError(SshException("Remote file is a directory!", null))
@@ -117,7 +118,7 @@ class SftpClient(val context: Context) {
     }
 
     fun deleteFile(remoteFile: RemoteResourceInfo, listener: DeleteListener) {
-        AppExecutors.getInstance().network().execute(Runnable {
+        AppExecutors.networkIO().execute(Runnable {
             if (!client.isConnected) {
                 listener.onError(SshException("Client not connected", null))
                 return@Runnable
@@ -150,7 +151,7 @@ class SftpClient(val context: Context) {
     }
 
     fun uploadFile(localFile: File, remotePath: String, listener: UploadListener) {
-        AppExecutors.getInstance().network().execute(Runnable {
+        AppExecutors.networkIO().execute(Runnable {
             if (!client.isConnected) {
                 listener.onError(SshException("Client not connected", null))
                 return@Runnable
@@ -170,7 +171,7 @@ class SftpClient(val context: Context) {
     }
 
     fun disconnect(listener: DisconnectListener) {
-        AppExecutors.getInstance().network().execute {
+        AppExecutors.networkIO().execute {
             try {
                 client.disconnect()
                 listener.onDisconnected()

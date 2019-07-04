@@ -82,7 +82,6 @@ class SshConnectionAdapter(private val inflater: LayoutInflater,
 
             nameTextView.text = item.name
             addressTextView.text = "Address: ${item.address}:${item.port}"
-            //portTextView.text = "Port: ${item.port.toString()}"
             usernameTextView.text = "Username: ${item.username}"
             authTypeTextView.text = if (item.authMethod == 0) "Auth. type: Password" else "Auth. type: Certificate"
 

@@ -1,7 +1,6 @@
 package com.awolity.secftp.utils
 
 import android.content.Context
-import android.util.Log
 import com.awolity.secftp.view.knownhosts.KnownHost
 import java.io.BufferedReader
 import java.io.File
@@ -17,7 +16,7 @@ fun isHostKnown(context: Context, hostname: String): Boolean {
         )
     )
         .filter { it.startsWith(hostname) }
-    return !matchingHosts.isEmpty()
+    return matchingHosts.isNotEmpty()
 }
 
 fun knownHostsFileExist(context: Context): Boolean {
@@ -40,7 +39,7 @@ fun readKnownHostsFile(knownHostsFile: File): MutableList<String> {
             line = reader.readLine()
         }
     } catch (ioe: IOException) {
-        Log.e(TAG, "readKnownHostsFile - IOException: ${ioe.localizedMessage}")
+        MyLog.e(TAG, "readKnownHostsFile - IOException: ${ioe.localizedMessage}", ioe)
     }
     return result
 }

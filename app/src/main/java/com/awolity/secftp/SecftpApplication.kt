@@ -1,12 +1,14 @@
 package com.awolity.secftp
 
 import android.app.Application
+import com.awolity.secftp.utils.FileLoggingTree
 import com.awolity.secftp.utils.isOnlyTrustedServersSet
 import com.awolity.secftp.utils.knownHostsFileExist
 import com.awolity.secftp.utils.setOnlyTrustedServers
+import timber.log.Timber
 import java.security.Security
 
-class SecftpApplication: Application() {
+class SecftpApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
@@ -16,8 +18,11 @@ class SecftpApplication: Application() {
                 this
             )
         ) {
-            // if there is no known_hosts file and OnlyTrustedServer setting is not yet set, than be promiscous ;)
+            // if there is no known_hosts file and OnlyTrustedServer setting is not yet set,
+            // than be promiscous ;)
             setOnlyTrustedServers(this, false)
         }
+
+        // Timber.plant(FileLoggingTree(applicationContext))
     }
 }

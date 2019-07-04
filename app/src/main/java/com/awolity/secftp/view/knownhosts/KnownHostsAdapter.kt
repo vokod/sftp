@@ -16,10 +16,6 @@ class KnownHostsAdapter(
     private val inflater: LayoutInflater, private val listener: (KnownHost) -> Unit
 ) : RecyclerView.Adapter<KnownHostsAdapter.KnownHostViewHolder>() {
 
-    interface KnownHostListener{
-        fun onKnownHostDeleteClicked(item:KnownHost)
-    }
-
     private val items = ArrayList<KnownHost>()
 
     fun updateItems(newItems: List<KnownHost>?) {

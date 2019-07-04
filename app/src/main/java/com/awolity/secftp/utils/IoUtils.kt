@@ -1,10 +1,9 @@
 package com.awolity.secftp.utils
 
 import android.content.Context
-import android.util.Log
 import java.io.File
 
-fun deleteFileIfExist(context: Context, name: String){
+fun deleteFileIfExist(context: Context, name: String) {
     if (name.isNotEmpty() && fileExist(context, name)) {
         deleteFile(context, name)
     }
@@ -24,7 +23,7 @@ fun saveFile(context: Context, file: File, newName: String): File? {
         val filesDir = context.filesDir
         resultFile = file.copyTo(File(filesDir, newName), overwrite = true)
     } catch (e: Exception) {
-        Log.e(TAG, "saveFile - exception: $e")
+        MyLog.e(TAG, "saveFile - exception: $e", e)
     } finally {
         return resultFile
     }

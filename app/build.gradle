@@ -83,5 +83,9 @@ dependencies {
     //anko
     implementation "org.jetbrains.anko:anko:0.10.8"
 
+    // Timber
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    // Simple Logging Facade - for sshj logging
     implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.7'
 }

@@ -152,7 +152,7 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
     }
 
     private fun setupObservers() {
-        sftpViewModel.isBusy.observe(this, androidx.lifecycle.Observer {
+        sftpViewModel.isBusy.observe(this, Observer {
             if (it) {
                 startProgress()
             } else {

@@ -3,7 +3,6 @@ package com.awolity.secftp.view.connection
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -14,6 +13,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.files.fileChooser
 import com.awolity.secftp.R
 import com.awolity.secftp.model.SshConnectionData
+import com.awolity.secftp.utils.MyLog
 import com.awolity.settingviews.ButtonSetting
 import com.awolity.settingviews.RadiogroupSetting
 import kotlinx.android.synthetic.main.activity_connection.*
@@ -34,7 +34,7 @@ class ConnectionDetailsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume")
+        MyLog.d(TAG, "onResume")
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
