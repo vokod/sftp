@@ -44,7 +44,8 @@ class SettingsActivity : AppCompatActivity() {
         bs_known_hosts_file.isEnabled = onlyTrustedServers
         bs_edit_known_hosts.isEnabled = onlyTrustedServers
 
-        val bsKnow = findViewById<ButtonSetting>(R.id.bs_known_hosts_file) //valamiert nullnak l'tja a koltin android extension altal letrehozott referenciakat, de csak a materialdialog lambdajaban
+        val bsKnow =
+            findViewById<ButtonSetting>(R.id.bs_known_hosts_file) //valamiert nullnak l'tja a koltin android extension altal letrehozott referenciakat, de csak a materialdialog lambdajaban
         bsKnow.checked = knownHostsFileExist(this)
         bsKnow.setOnClickListener {
             MaterialDialog(this).show {
@@ -52,9 +53,13 @@ class SettingsActivity : AppCompatActivity() {
                     try {
                         importKnownHostsFile(this@SettingsActivity, file)
                         if (!bsKnow.checked) bsKnow.check()
-                        else toast("Known hosts imported")
+                        else toast(getString(R.string.settingsact_hosts_imported))
                     } catch (e: Exception) {
-                        Toast.makeText(this@SettingsActivity, "Some error occurred", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this@SettingsActivity,
+                            getString(R.string.settingsact_hosts_import_error), Toast.LENGTH_LONG
+                        )
+                            .show()
                     }
                 }
             }
@@ -65,7 +70,8 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         ss_show_hidden_files.checked = getShowHiddenFiles(this)
-        ss_show_hidden_files.setOnCheckedChangedListener(CompoundButton.OnCheckedChangeListener { _, isChecked ->
+        ss_show_hidden_files.setOnCheckedChangedListener(CompoundButton.OnCheckedChangeListener {
+                _, isChecked ->
             setShowHiddenFiles(this@SettingsActivity, isChecked)
         })
     }

@@ -8,4 +8,52 @@
 
     <string name="search">Search</string>
     <string name="title_activity_know_host">KnowHostActivity</string>
+    <string name="sftpclient_onconnectionerror">SshConnectionData error</string>
+    <string name="sftpclient_transportexception">Transport exception error - host key not verifiable</string>
+    <string name="sftpclient_userauthexception">User authentication error</string>
+    <string name="sftpclient_ioexception">IO exception error</string>
+    <string name="sftpclient_client_not_connected">Client not connected</string>
+    <string name="sftpclient_client_not_authenticated">Client not authenticated</string>
+    <string name="sftpclient_remotefileisadir">Remote file is a directory!</string>
+    <string name="conndetailsvm_invalid_host">Host address is not valid.</string>
+    <string name="conndetailsvm_invalid_pw">Password not valid.</string>
+    <string name="conndetailsvm_import_keyfile">Import private key file.</string>
+    <string name="conndetailsvm_key_save_error">Error while saving private key file</string>
+    <string name="knownhostact_import_success">Known hosts imported</string>
+    <string name="knownhostact_import_error">Some error occurred</string>
+    <string name="knownhostact_delete_dialog_title">Delete</string>
+    <string name="knownhostact_delete_dialog_content">Do you really want to delete the known host %s?</string>
+    <string name="knownhostact_item_type">type: %s</string>
+    <string name="mainact_untrusted_dialog_title">Host not trusted</string>
+    <string name="mainact_untrusted_dialog_content">The specified host is not on the list of known hosts. Either import the host`s public key, or turn off Trusted servers in settings</string>
+    <string name="mainact_untrusted_dialog_action">Go to Settings</string>
+    <string name="mainact_delete_dialog_title">Delete</string>
+    <string name="mainact_delete_dialog_content">Do you really want to delete the connection %s?</string>
+    <string name="mainact_permission_dialog_title">Write external storage permission</string>
+    <string name="mainact_permission_dialog_content">Write external storage permission is needed to copy files to and from remote servers.</string>
+    <string name="mainact_item_address">Address: %s:%d</string>
+    <string name="mainact_item_username">Username: %s</string>
+    <string name="mainact_item_auth_type_pw">Auth. type: Password</string>
+    <string name="mainact_item_auth_type_key">Auth. type: Certificate</string>
+    <string name="settingsact_hosts_imported">Known hosts imported</string>
+    <string name="settingsact_hosts_import_error">Some error occurred</string>
+    <string name="sftpact_folder">Folder</string>
+    <string name="sftpact_search">Search</string>
+    <string name="sftpact_dialog_delete_title">Delete</string>
+    <string name="sftpact_dialog_delete_content">Do you really want to delete the file %s?</string>
+    <string name="sftpact_dialog_disconnect_title">Disconnect</string>
+    <string name="sftpact_dialog_disconnect_content">Do you really want to close connection?</string>
+    <string name="sftpact_dialog_error_title">Error</string>
+    <string name="sftpvm_known_host_verification_error">Known_hosts file verification error</string>
+    <string name="sftpvm_connection_error">Error while connecting: %s</string>
+    <string name="sftpvm_disconnection_error">Error while disconnecting</string>
+    <string name="sftpvm_file_uploaded">File uploaded</string>
+    <string name="sftpvm_file_upoad_error">File upload error: %s</string>
+    <string name="sftpvm_file_downloaded">File downloaded</string>
+    <string name="sftpvm_file_download_error">File download error: %s</string>
+    <string name="sftpvm_file_deleted">File deleted</string>
+    <string name="sftpvm_file_delete_error">File delete error: %s</string>
+    <string name="sftpvm_dir_list_error">Folder listing error: %s</string>
+
+
 </resources>

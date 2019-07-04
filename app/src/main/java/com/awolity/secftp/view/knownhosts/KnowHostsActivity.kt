@@ -38,9 +38,13 @@ class KnowHostsActivity : AppCompatActivity() {
                 fileChooser { _, file ->
                     try {
                         importKnownHostsFile(this@KnowHostsActivity, file)
-                        toast("Known hosts imported")
+                        toast(getString(R.string.knownhostact_import_success))
                     } catch (e: Exception) {
-                        Toast.makeText(this@KnowHostsActivity, "Some error occurred", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this@KnowHostsActivity, getString(
+                                R.string.knownhostact_import_error
+                            ), Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             }
@@ -48,10 +52,13 @@ class KnowHostsActivity : AppCompatActivity() {
     }
 
     private fun setupRv() {
-        adapter = KnownHostsAdapter(layoutInflater) { knownHost -> Unit
+        adapter = KnownHostsAdapter(layoutInflater) { knownHost ->
+            Unit
             MaterialDialog(this@KnowHostsActivity).show {
-                title(text = "Delete")
-                message(text = "Do you really want to delete the known host ${knownHost.address}?")
+                title(text = getString(R.string.knownhostact_delete_dialog_title))
+                message(
+                    text = getString(R.string.knownhostact_delete_dialog_content, knownHost.address)
+                )
                 positiveButton { vm.deleteKnownHost(knownHost) }
                 negativeButton { dismiss() }
             }

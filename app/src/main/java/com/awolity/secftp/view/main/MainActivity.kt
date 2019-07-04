@@ -67,10 +67,10 @@ class MainActivity : AppCompatActivity(), SshConnectionAdapter.SshConnectionList
             startActivity(SftpActivity.getNewIntent(this, item.id, item.name))
         } else {
             MaterialDialog(this).show {
-                title(text = "Host not trusted")
-                message(text = "The specified host is not on the list of known hosts. Either import the host`s public key, or turn off Trusted servers in settings")
+                title(text = getString(R.string.mainact_untrusted_dialog_title))
+                message(text = getString(R.string.mainact_untrusted_dialog_content))
                 positiveButton { dismiss() }
-                negativeButton(text = "Go to Settings") {
+                negativeButton(text = getString(R.string.mainact_untrusted_dialog_action)) {
                     startActivity(SettingsActivity.getNewIntent(this@MainActivity))
                 }
             }
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity(), SshConnectionAdapter.SshConnectionList
     }
 
     override fun onLongClicked(item: SshConnectionData, itemView: View) {
-       // startActivity(ConnectionDetailsActivity.getNewIntent(this, item.id))
+        // startActivity(ConnectionDetailsActivity.getNewIntent(this, item.id))
         val popup = PopupMenu(this@MainActivity, itemView)
         popup.menuInflater.inflate(R.menu.menu_main_popup, popup.menu)
         popup.setOnMenuItemClickListener {
@@ -89,8 +89,8 @@ class MainActivity : AppCompatActivity(), SshConnectionAdapter.SshConnectionList
                 }
                 R.id.menu_item_delete -> {
                     MaterialDialog(this@MainActivity).show {
-                        title(text = "Delete")
-                        message(text = "Do you really want to delete the connection ${item.name}?")
+                        title(text = getString(R.string.mainact_delete_dialog_title))
+                        message(text = getString(R.string.mainact_delete_dialog_content, item.name))
                         positiveButton { vm.deleteConnection(item) }
                         negativeButton { dismiss() }
                     }
@@ -105,7 +105,14 @@ class MainActivity : AppCompatActivity(), SshConnectionAdapter.SshConnectionList
     }
 
     private fun setupWidgets() {
-        fab_add_host.setOnClickListener { startActivity(ConnectionDetailsActivity.getNewIntent(this@MainActivity, 0)) }
+        fab_add_host.setOnClickListener {
+            startActivity(
+                ConnectionDetailsActivity.getNewIntent(
+                    this@MainActivity,
+                    0
+                )
+            )
+        }
     }
 
     private fun checkPermission() {
@@ -114,8 +121,8 @@ class MainActivity : AppCompatActivity(), SshConnectionAdapter.SshConnectionList
             .withListener(
                 DialogOnDeniedPermissionListener.Builder
                     .withContext(this)
-                    .withTitle("Write external storage permission")
-                    .withMessage("Write external storage permission is needed to copy files to and from remote servers.")
+                    .withTitle(getString(R.string.mainact_permission_dialog_title))
+                    .withMessage(getString(R.string.mainact_permission_dialog_content))
                     .withButtonText(android.R.string.ok)
                     .withIcon(R.drawable.ic_sd_storage)
                     .build()
@@ -124,7 +131,8 @@ class MainActivity : AppCompatActivity(), SshConnectionAdapter.SshConnectionList
     }
 
     private fun setupRv() {
-        adapter = SshConnectionAdapter(layoutInflater, this as SshConnectionAdapter.SshConnectionListener)
+        adapter =
+            SshConnectionAdapter(layoutInflater, this as SshConnectionAdapter.SshConnectionListener)
         val linearLayoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         rv_hosts.layoutManager = linearLayoutManager
         rv_hosts.adapter = adapter

@@ -13,7 +13,8 @@ import com.awolity.secftp.model.SshConnectionData
 import com.awolity.secftp.utils.getInitial
 import java.util.*
 
-class SshConnectionAdapter(private val inflater: LayoutInflater,
+class SshConnectionAdapter(
+    private val inflater: LayoutInflater,
     private val sshConnectionListener: SshConnectionListener
 ) : RecyclerView.Adapter<SshConnectionAdapter.SshConnectionViewHolder>() {
 
@@ -81,12 +82,18 @@ class SshConnectionAdapter(private val inflater: LayoutInflater,
             }
 
             nameTextView.text = item.name
-            addressTextView.text = "Address: ${item.address}:${item.port}"
-            usernameTextView.text = "Username: ${item.username}"
-            authTypeTextView.text = if (item.authMethod == 0) "Auth. type: Password" else "Auth. type: Certificate"
+            addressTextView.text =
+                itemView.context.getString(R.string.mainact_item_address, item.address, item.port)
+            usernameTextView.text =
+                itemView.context.getString(R.string.mainact_item_username, item.username)
+            authTypeTextView.text =
+                if (item.authMethod == 0)
+                    itemView.context.getString(R.string.mainact_item_auth_type_pw)
+                else
+                    itemView.context.getString(R.string.mainact_item_auth_type_pw)
 
             var firstLetter = ""
-            if (!item.name.isEmpty()) {
+            if (item.name.isNotEmpty()) {
                 firstLetter = item.name.substring(0, 1)
             }
             initialImageView.setImageDrawable(

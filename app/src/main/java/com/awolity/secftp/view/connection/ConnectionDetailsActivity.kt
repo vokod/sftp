@@ -129,7 +129,8 @@ class ConnectionDetailsActivity : AppCompatActivity() {
 
     private fun setupMessageObserver() {
         vm.message.observe(this, Observer {
-            if (it.isNotEmpty()) Toast.makeText(this@ConnectionDetailsActivity, it, Toast.LENGTH_LONG).show()
+            if (it.isNotEmpty()) Toast.makeText(this@ConnectionDetailsActivity, it,
+                Toast.LENGTH_LONG).show()
         })
     }
 

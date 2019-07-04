@@ -19,10 +19,11 @@ class SecftpApplication : Application() {
             )
         ) {
             // if there is no known_hosts file and OnlyTrustedServer setting is not yet set,
-            // than be promiscous ;)
+            // than be promiscuous ;)
             setOnlyTrustedServers(this, false)
         }
 
         // Timber.plant(FileLoggingTree(applicationContext))
+        Timber.plant(Timber.DebugTree())
     }
 }

@@ -71,7 +71,8 @@ class KnownHostsAdapter(
             }
 
             addressTextView.text = item.address
-            metadataTextView.text = "type: ${item.type}"
+            metadataTextView.text =
+                itemView.context.getString(R.string.knownhostact_item_type, item.type)
             val firstLetter = item.address.substring(0, 1)
             initialImageView.setImageDrawable(
                 getInitial(firstLetter)

@@ -6,6 +6,7 @@ import android.util.Patterns
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.awolity.secftp.R
 import com.awolity.secftp.model.SshConnectionData
 import com.awolity.secftp.model.SshConnectionDatabase
 import com.awolity.secftp.utils.AppExecutors
@@ -50,18 +51,18 @@ class ConnectionDetailsViewModel(application: Application) : AndroidViewModel(ap
         val isUrl = Patterns.WEB_URL.matcher(sshConnectionData.address).matches()
         val isInetAddress = InetAddressValidator.getInstance().isValid(sshConnectionData.address)
         if (!(isUrl || isInetAddress)) {
-            _message.value = "Host address is not valid."
+            _message.value = context.getString(R.string.conndetailsvm_invalid_host)
             return false
         }
 
         if (sshConnectionData.authMethod == 0) { //password auth
             if (sshConnectionData.password.isEmpty()) {
-                _message.value = "Password not valid."
+                _message.value = context.getString(R.string.conndetailsvm_invalid_pw)
                 return false
             }
         } else { // key auth
             if (sshConnectionData.privKeyFileName.isEmpty()) {
-                _message.value = "Import private key file."
+                _message.value = context.getString(R.string.conndetailsvm_import_keyfile)
                 return false
             }
         }
@@ -76,7 +77,7 @@ class ConnectionDetailsViewModel(application: Application) : AndroidViewModel(ap
             if (savedFile != null) {
                 AppExecutors.mainThread().execute { listener(savedFile) }
             } else {
-                _message.postValue("Error while saving private key file")
+                _message.postValue(context.getString(R.string.conndetailsvm_key_save_error))
             }
         }
     }

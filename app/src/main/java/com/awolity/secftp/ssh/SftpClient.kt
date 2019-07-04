@@ -3,6 +3,7 @@ package com.awolity.secftp.ssh
 import android.content.Context
 import android.util.Log
 import androidx.annotation.WorkerThread
+import com.awolity.secftp.R
 import com.awolity.secftp.utils.AppExecutors
 import com.awolity.secftp.model.SshConnectionData
 import com.awolity.secftp.utils.MyLog
@@ -51,7 +52,8 @@ class SftpClient(val context: Context) {
                 client.authPassword(data.username, data.password)
                 MyLog.d(TAG, "...authenticated with password")
             } else { // certificate
-                val keyProvider = client.loadKeys(File(context.filesDir, data.privKeyFileName).absolutePath)
+                val keyProvider =
+                    client.loadKeys(File(context.filesDir, data.privKeyFileName).absolutePath)
                 client.authPublickey(data.username, keyProvider)
                 MyLog.d(TAG, "...authenticated with key")
             }
@@ -59,72 +61,74 @@ class SftpClient(val context: Context) {
 
             listener.onConnected()
         } catch (e: ConnectionException) {
-            listener.onConnectionError(SshException("SshConnectionData error", e))
+            listener.onConnectionError(
+                SshException(context.getString(R.string.sftpclient_onconnectionerror), e)
+            )
         } catch (e: TransportException) {
-            listener.onConnectionError(SshException("Transport exception error - host key not verifiable", e))
+            listener.onConnectionError(
+                SshException(context.getString(R.string.sftpclient_transportexception), e)
+            )
             // on TransportException: [HOST_KEY_NOT_VERIFIABLE]
         } catch (e: UserAuthException) {
-            listener.onConnectionError(SshException("User authentication error", e))
+            listener.onConnectionError(
+                SshException(context.getString(R.string.sftpclient_userauthexception), e)
+            )
             // on UserAuthException
         } catch (e: IOException) {
             // on Host unreachable
             // on Network unreachable
             // on ConnectException
-            listener.onConnectionError(SshException("IO exception error", e))
+            listener.onConnectionError(
+                SshException(context.getString(R.string.sftpclient_ioexception), e)
+            )
         }
     }
 
     fun listDirectory(path: String, listener: ListDirectoryListener) {
         MyLog.d(TAG, "listDirectory() called with: sshClient = [$client], listener = [$listener]")
         AppExecutors.networkIO().execute {
-            if (!client.isConnected) {
-                listener.onError(SshException("Client not connected", null))
-            } else if (!client.isAuthenticated) {
-                listener.onError(SshException("Client not authenticated", null))
-            } else {
-                try {
-                    client.newSFTPClient().use { sftp ->
-                        val remoteFiles = sftp.ls(path)
-                        listener.onDirectoryListed(remoteFiles)
-                    }
-                } catch (e: IOException) {
-                    listener.onError(SshException("IO exception error", e))
+            if (!checkClientConnectedAndAuthenticated(listener)) {
+                return@execute
+            }
+            try {
+                client.newSFTPClient().use { sftp ->
+                    val remoteFiles = sftp.ls(path)
+                    listener.onDirectoryListed(remoteFiles)
                 }
-
+            } catch (e: IOException) {
+                listener.onError(
+                    SshException(context.getString(R.string.sftpclient_ioexception), e)
+                )
             }
         }
     }
 
     fun downloadFile(remoteFile: RemoteResourceInfo, inputDir: File, listener: DownloadListener) {
-        AppExecutors.networkIO().execute(Runnable {
-            val inFile = File(inputDir, remoteFile.name)
+        AppExecutors.networkIO().execute {
+            if (!checkClientConnectedAndAuthenticated(listener)) {
+                return@execute
+            }
             if (remoteFile.isDirectory || !remoteFile.isRegularFile) {
-                listener.onError(SshException("Remote file is a directory!", null))
-                return@Runnable
+                listener.onError(SshException(context.getString(R.string.sftpclient_remotefileisadir), null))
+                return@execute
             }
-            if (!client.isConnected) {
-                listener.onError(SshException("Client not connected", null))
-            } else if (!client.isAuthenticated) {
-                listener.onError(SshException("Client not authenticated", null))
-            } else {
-                try {
-                    client.newSFTPClient().use { sftp -> sftp.get(remoteFile.path, FileSystemFile(inFile)) }
-                    listener.onFileDownloaded(inFile)
-                } catch (e: IOException) {
-                    listener.onError(SshException("IO exception error", e))
-                }
+            try {
+                val inFile = File(inputDir, remoteFile.name)
+                client.newSFTPClient()
+                    .use { sftp -> sftp.get(remoteFile.path, FileSystemFile(inFile)) }
+                listener.onFileDownloaded(inFile)
+            } catch (e: IOException) {
+                listener.onError(
+                    SshException(context.getString(R.string.sftpclient_ioexception), e)
+                )
             }
-        })
+        }
     }
 
     fun deleteFile(remoteFile: RemoteResourceInfo, listener: DeleteListener) {
-        AppExecutors.networkIO().execute(Runnable {
-            if (!client.isConnected) {
-                listener.onError(SshException("Client not connected", null))
-                return@Runnable
-            } else if (!client.isAuthenticated) {
-                listener.onError(SshException("Client not authenticated", null))
-                return@Runnable
+        AppExecutors.networkIO().execute {
+            if (!checkClientConnectedAndAuthenticated(listener)) {
+                return@execute
             }
             if (remoteFile.isDirectory) {
                 try {
@@ -133,9 +137,10 @@ class SftpClient(val context: Context) {
                         listener.onFileDeleted(remoteFile.name)
                     }
                 } catch (e: IOException) {
-                    listener.onError(SshException("IO exception error", e))
+                    listener.onError(
+                        SshException(context.getString(R.string.sftpclient_ioexception), e)
+                    )
                 }
-
             } else {
                 try {
                     client.newSFTPClient().use { sftp ->
@@ -143,31 +148,33 @@ class SftpClient(val context: Context) {
                         listener.onFileDeleted(remoteFile.name)
                     }
                 } catch (e: IOException) {
-                    listener.onError(SshException("IO exception error", e))
+                    listener.onError(
+                        SshException(context.getString(R.string.sftpclient_ioexception), e)
+                    )
                 }
-
             }
-        })
+        }
     }
 
     fun uploadFile(localFile: File, remotePath: String, listener: UploadListener) {
-        AppExecutors.networkIO().execute(Runnable {
-            if (!client.isConnected) {
-                listener.onError(SshException("Client not connected", null))
-                return@Runnable
-            } else if (!client.isAuthenticated) {
-                listener.onError(SshException("Client not authenticated", null))
-                return@Runnable
+        AppExecutors.networkIO().execute {
+            if (!checkClientConnectedAndAuthenticated(listener)) {
+                return@execute
             }
             try {
                 client.newSFTPClient().use { sftp ->
-                    sftp.put(FileSystemFile(localFile.absolutePath), remotePath + "/" + localFile.name)
+                    sftp.put(
+                        FileSystemFile(localFile.absolutePath),
+                        remotePath + "/" + localFile.name
+                    )
                     listener.onFileUploaded(localFile.name)
                 }
             } catch (e: IOException) {
-                listener.onError(SshException("IO exception error", e))
+                listener.onError(
+                    SshException(context.getString(R.string.sftpclient_ioexception), e)
+                )
             }
-        })
+        }
     }
 
     fun disconnect(listener: DisconnectListener) {
@@ -176,9 +183,41 @@ class SftpClient(val context: Context) {
                 client.disconnect()
                 listener.onDisconnected()
             } catch (e: IOException) {
-                listener.onError(SshException("IO error exception", e))
+                listener.onError(
+                    SshException(
+                        context.getString(R.string.sftpclient_ioexception),
+                        e
+                    )
+                )
             }
         }
+    }
+
+    @WorkerThread
+    private fun checkClientConnectedAndAuthenticated(listener: SftpListener): Boolean {
+        if (!client.isConnected) {
+            listener.onError(
+                SshException(
+                    context.getString(R.string.sftpclient_client_not_connected),
+                    null
+                )
+            )
+            return false
+        } else if (!client.isAuthenticated) {
+            listener.onError(
+                SshException(
+                    context.getString(R.string.sftpclient_client_not_authenticated),
+                    null
+                )
+            )
+            return false
+        }
+        return true
+    }
+
+
+    interface SftpListener {
+        fun onError(e: Exception)
     }
 
     interface ConnectListener {
@@ -189,34 +228,24 @@ class SftpClient(val context: Context) {
         fun onConnectionError(e: Exception)
     }
 
-    interface DisconnectListener {
+    interface DisconnectListener : SftpListener {
         fun onDisconnected()
-
-        fun onError(e: Exception)
     }
 
-    interface ListDirectoryListener {
+    interface ListDirectoryListener : SftpListener {
         fun onDirectoryListed(remoteFiles: List<RemoteResourceInfo>)
-
-        fun onError(e: Exception)
     }
 
-    interface DownloadListener {
+    interface DownloadListener : SftpListener {
         fun onFileDownloaded(file: File)
-
-        fun onError(e: Exception)
     }
 
-    interface DeleteListener {
+    interface DeleteListener : SftpListener {
         fun onFileDeleted(name: String)
-
-        fun onError(e: Exception)
     }
 
-    interface UploadListener {
+    interface UploadListener : SftpListener {
         fun onFileUploaded(result: String)
-
-        fun onError(e: Exception)
     }
 
     companion object {

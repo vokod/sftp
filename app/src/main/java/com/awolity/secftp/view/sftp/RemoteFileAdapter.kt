@@ -85,7 +85,7 @@ class RemoteFileAdapter(
             when {
                 item.isDirectory -> {
                     initialImageView.setImageDrawable(initialImageView.context.getDrawable(R.drawable.ic_folder))
-                    descriptionTextView.text = "Folder"
+                    descriptionTextView.text = itemView.context.getString(R.string.sftpact_folder)
                 }
                 else -> {
                     initialImageView.setImageDrawable(getInitial(item.name))

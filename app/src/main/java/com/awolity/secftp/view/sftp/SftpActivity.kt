@@ -30,7 +30,9 @@ import org.jetbrains.anko.toast
 class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
 
     private lateinit var adapter: RemoteFileAdapter
-    private val sftpViewModel: SftpViewModel by lazy { ViewModelProviders.of(this).get(SftpViewModel::class.java) }
+    private val sftpViewModel: SftpViewModel by lazy {
+        ViewModelProviders.of(this).get(SftpViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,8 +63,13 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
                     }
                     R.id.menu_item_delete -> {
                         MaterialDialog(this@SftpActivity).show {
-                            title(text = "Delete")
-                            message(text = "Do you really want to delete the file ${item.name}?")
+                            title(text = getString(R.string.sftpact_dialog_delete_title))
+                            message(
+                                text = getString(
+                                    R.string.sftpact_dialog_delete_content,
+                                    item.name
+                                )
+                            )
                             positiveButton { sftpViewModel.delete(item) }
                             negativeButton { dismiss() }
                         }
@@ -80,8 +87,8 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
     override fun onBackPressed() {
         if (sftpViewModel.backOrPop()) {
             MaterialDialog(this).show {
-                title(text = "Disconnect")
-                message(text = "Do you really want to close connection?")
+                title(text = getString(R.string.sftpact_dialog_disconnect_title))
+                message(text = getString(R.string.sftpact_dialog_disconnect_content))
                 positiveButton {
                     sftpViewModel.disconnect()
                     super.onBackPressed()
@@ -114,7 +121,7 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
                     input { _, text ->
                         sftpViewModel.search(text.toString())
                     }
-                    positiveButton(text = "Search")
+                    positiveButton(text = getString(R.string.sftpact_search))
                 }
             }
             R.id.menu_item_disconnect -> {
@@ -145,7 +152,8 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
             this as RemoteFileAdapter.RemoteFileListener
         )
         val linearLayoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        val dividerItemDecoration = DividerItemDecoration(rv_remote.context, linearLayoutManager.orientation)
+        val dividerItemDecoration =
+            DividerItemDecoration(rv_remote.context, linearLayoutManager.orientation)
         rv_remote.addItemDecoration(dividerItemDecoration)
         rv_remote.layoutManager = linearLayoutManager
         rv_remote.adapter = adapter
@@ -174,7 +182,7 @@ class SftpActivity : AppCompatActivity(), RemoteFileAdapter.RemoteFileListener {
 
         sftpViewModel.errorDialogMessage.observe(this, Observer {
             MaterialDialog(this).show {
-                title(text = "Error")
+                title(text = getString(R.string.sftpact_dialog_error_title))
                 message(text = it)
                 icon(R.drawable.ic_error_black_24dp)
                 positiveButton { finish() }
