@@ -35,7 +35,12 @@
         </activity>
         <activity
                 android:name=".view.connection.ConnectionDetailsActivity"
-                android:windowSoftInputMode="adjustResize|adjustPan">
+                android:windowSoftInputMode="adjustPan"
+
+                android:parentActivityName=".view.main.MainActivity">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.awolity.secftp.view.main.MainActivity"/>
         </activity>
         <activity
                 android:name=".view.sftp.SftpActivity"

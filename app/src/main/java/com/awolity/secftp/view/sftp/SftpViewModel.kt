@@ -3,16 +3,17 @@ package com.awolity.secftp.view.sftp
 import android.app.Application
 import android.content.Context
 import android.os.Environment
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.awolity.secftp.*
+import com.awolity.secftp.R
+import com.awolity.secftp.SecftpApplication
 import com.awolity.secftp.model.SshConnectionDatabase
 import com.awolity.secftp.ssh.SftpClient
 import com.awolity.secftp.ssh.SftpClient.ConnectListener
 import com.awolity.secftp.utils.*
 import com.awolity.yavel.Yavel
+import com.awolity.yavel.YavelException
 import net.schmizz.sshj.sftp.RemoteResourceInfo
 import java.io.File
 import java.io.IOException
@@ -70,8 +71,13 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
                     .connectionDao()
                     .getByIdSync(id)
             if (connectionData.authMethod == 0) {
-                connectionData.password =
-                    Yavel.get(YAVEL_KEY_ALIAS).decryptString(connectionData.password)
+                try {
+                    connectionData.password = Yavel.get(YAVEL_KEY_ALIAS).decryptString(connectionData.password)
+                } catch (e: YavelException) {
+                    _errorDialogMessage.postValue("Password decryption error")
+                    return@execute
+                }
+
             }
             if (getOnlyTrustedServers(getApplication())) {
                 sftpClient.connectToKnownHost(

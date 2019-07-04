@@ -26,6 +26,7 @@ class KnowHostsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_know_host)
         actionBar?.setDisplayHomeAsUpEnabled(true)
+        title = getString(R.string.knownhostact_title)
 
         setupWidgets()
         setupRv()

@@ -64,6 +64,8 @@ class ConnectionDetailsActivity : AppCompatActivity() {
     }
 
     private fun setupWidgets() {
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        title = getString(R.string.conndetailsact_title)
         rs_auth_type.setListener(object : RadiogroupSetting.RadiogroupSettingListener {
             override fun OnRadioButtonClicked(selected: Int) {
                 if (selected == 0) { // password
