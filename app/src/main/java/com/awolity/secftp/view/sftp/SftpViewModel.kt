@@ -31,6 +31,7 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
     private val sftpClient: SftpClient
     private val dirs = ArrayDeque<String>()
     private val context: Context
+    private var tempDir: String? = null
 
     var isBusy: LiveData<Boolean> = _isBusy
         get() = _isBusy
@@ -257,6 +258,8 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun search(text: String) {
+        tempDir = _actualDir.value;
+        _actualDir.value = "${actualDir.value} Search: \"$text\""
         isSearchedRightNow = true
         _files.postValue(_files.value?.filter {
             it.name.contains(text, ignoreCase = true)
@@ -267,11 +270,18 @@ class SftpViewModel(application: Application) : AndroidViewModel(application) {
         MyLog.d(TAG, "back")
         return try {
             if (!isSearchedRightNow) {
+                // not from searching, go back a folder
                 dirs.pop()
             }
             if (dirs.peek() == null) {
+                // if no previous folder, then we are at root, disconnect
                 true
             } else {
+                // from previous searching, refresh actualdir
+                if(isSearchedRightNow){
+                    _actualDir.value = tempDir
+                    isSearchedRightNow = false
+                }
                 listDirectory(dirs.peek(), false)
                 false
             }

@@ -24,6 +24,6 @@ class SecftpApplication : Application() {
         }
 
         // Timber.plant(FileLoggingTree(applicationContext))
-        Timber.plant(Timber.DebugTree())
+        // Timber.plant(Timber.DebugTree())
     }
 }
